@@ -134,12 +134,12 @@ app.post('/user', (req, res) => {
     const { FullName, Email, Phone, Gender } = req.body;
 
     // Check if all required fields are provided
-    if (!FullName || !Email || !Phone || !Gender ) {
+    if (!FullName || !Phone ) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
-    const sql = 'INSERT INTO users (FullName, Email, Phone, Gender) VALUES (?, ?, ?, ?)';
-    db.query(sql, [FullName, Email, Phone, Gender], (err, data) => {
+    const sql = 'INSERT INTO users (FullName, Phone) VALUES (?, ?)';
+    db.query(sql, [FullName, Phone], (err, data) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json({ message: err });
