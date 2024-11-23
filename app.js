@@ -152,7 +152,7 @@ app.post('/user', (req, res) => {
 //Schemes API
 
 app.get('/schemes', (req, res) => {
-    const sql = 'SELECT * FROM Schemes';
+    const sql = 'SELECT * FROM schemes';
     db.query(sql, (err, data) => {
         if (err) {
             console.error("Database error:", err);
@@ -171,7 +171,7 @@ app.post('/scheme', upload.single('Image'), (req, res) => {
     }
 
     // Insert the scheme data into the database
-    const sql = 'INSERT INTO Schemes (SchemeName, Description, WebsiteUrl, Image) VALUES (?, ?, ?, ?)';
+    const sql = 'INSERT INTO schemes (SchemeName, Description, WebsiteUrl, Image) VALUES (?, ?, ?, ?)';
     db.query(sql, [SchemeName, Description, WebsiteUrl, ''], (err, data) => {
         if (err) {
             console.error("Database error:", err);
@@ -198,7 +198,7 @@ app.post('/scheme', upload.single('Image'), (req, res) => {
             const relativeFilePath = path.join('schemes', String(schemeId), req.file.originalname);
 
             // Update the image path in the database
-            const updateSql = 'UPDATE Schemes SET Image = ? WHERE id = ?';
+            const updateSql = 'UPDATE schemes SET Image = ? WHERE id = ?';
             db.query(updateSql, [relativeFilePath, schemeId], (updateErr) => {
                 if (updateErr) {
                     console.error("Database update error:", updateErr);
@@ -219,7 +219,7 @@ app.delete('/scheme/:id', (req, res) => {
     const schemeId = req.params.id;
 
     // Check if the scheme exists and retrieve the image path
-    const sqlSelect = 'SELECT Image FROM Schemes WHERE id = ?';
+    const sqlSelect = 'SELECT Image FROM schemes WHERE id = ?';
     db.query(sqlSelect, [schemeId], (err, result) => {
         if (err) {
             console.error("Database error:", err);
@@ -236,7 +236,7 @@ app.delete('/scheme/:id', (req, res) => {
         const schemeDir = path.join(__dirname, 'schemes', String(schemeId));
 
         // Delete the scheme data from the database
-        const sqlDelete = 'DELETE FROM Schemes WHERE id = ?';
+        const sqlDelete = 'DELETE FROM schemes WHERE id = ?';
         db.query(sqlDelete, [schemeId], (deleteErr) => {
             if (deleteErr) {
                 console.error("Database error during deletion:", deleteErr);
