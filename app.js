@@ -237,6 +237,38 @@ app.post('/block', (req, res) => {
     });
 });
 
+//MPR API
+
+app.get('/MPR', (req, res) => {
+    logger.log("debug", "Hello, World!"); //debug level as first param
+    const sql = 'SELECT * FROM MonthlyProgressReport';
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+        return res.status(200).json(data);
+    });
+});
+
+app.post('/MPR', (req, res) => {
+    const { StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments } = req.body;
+
+    // Check if all required fields are provided
+    if (!StartMonth || !EndMonth || !StartYear || !EndYear || !Block || !PreviousMonthCasesRecieved || !CurrentMonthCasesRecieved || !TotalCasesRecieved || !PreviousMonthCasesResolved || !CurrentMonthCasesResolved || !TotalCasesResolved || !CasesWithFir || !MedicalAssistance || !ShelterHomeAssistance || !DIRAssistance || !Other || !PromotionalActivitiesNumber || !NumberOfMeetingsOfDistrictMahilaSamadhanSamiti || !Comments) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+    const sql = 'INSERT INTO MonthlyProgressReport (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comment) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    db.query(sql, [ StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments ], (err, data) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ message: err });
+        }
+
+        return res.status(201).json({ message: "MPR added successfully", blockId: data.insertId });
+    });
+});
+
 
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
