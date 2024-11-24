@@ -359,6 +359,34 @@ const generateOTP = () => {
     return Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
 };
 
+app.post('/verify-otp', (req, res) => {
+    const { phoneNumber, otp } = req.body;
+
+    if (!phoneNumber || !otp) {
+        return res.status(400).json({ error: 'Phone number and OTP are required' });
+    }
+
+    // Query to check OTP
+    const query = `
+        SELECT * FROM otp_table
+        WHERE phone_number = ? AND otp = ? AND expires_at > NOW()
+    `;
+
+    db.query(query, [phoneNumber, otp], (err, results) => {
+        if (err) {
+            console.error('Error verifying OTP:', err);
+            return res.status(500).json({ error: 'Failed to verify OTP' });
+        }
+
+        if (results.length === 0) {
+            return res.status(400).json({ error: 'Invalid or expired OTP' });
+        }
+
+        // Success response
+        res.status(200).json({ message: 'OTP verified successfully' });
+    });
+});
+
 
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
