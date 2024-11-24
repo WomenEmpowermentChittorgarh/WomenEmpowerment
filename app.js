@@ -15,7 +15,7 @@ const { log } = require('console');
 const app = express()
 // const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }); // 100 requests per 15 minutes
 
-app.use(limiter);
+// app.use(limiter);
 app.use(cors())
 app.use(helmet());
 app.use(express.json());
