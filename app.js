@@ -16,7 +16,6 @@ app.use(limiter);
 app.use(cors())
 app.use(helmet());
 app.use(express.json());
-// app.use('/ProfileImages', express.static(path.join(__dirname, 'ProfileImages')));
 app.use('/schemes', express.static(path.join(__dirname, 'schemes')));
 
 
@@ -78,57 +77,6 @@ app.get('/user/:id', (req, res) => {
     });
 });
 
-// app.post('/user', upload.single('ProfileIMG'), (req, res) => {
-//     const { FullName, Email, Phone, Gender } = req.body;
-
-//     // Validate input fields
-//     if (!FullName || !Email || !Phone || !Gender || !req.file) {
-//         return res.status(400).json({ message: "All fields are required, including ProfileIMG" });
-//     }
-
-//     // Insert user data into the database
-//     const sql = 'INSERT INTO users (FullName, Email, Phone, Gender, ProfileIMG) VALUES (?, ?, ?, ?, ?)';
-//     db.query(sql, [FullName, Email, Phone, Gender, req.file.filename], (err, data) => {
-//         if (err) {
-//             console.error("Database error:", err);
-//             return res.status(500).json({ message: "Internal Server Error" });
-//         }
-
-//         const userId = data.insertId;
-
-//         // Move file to the user-specific folder
-//         const userDir = path.join(__dirname, 'ProfileImages', String(userId));
-//         if (!fs.existsSync(userDir)) {
-//             fs.mkdirSync(userDir, { recursive: true });
-//         }
-
-//         const newFilePath = path.join(userDir, req.file.filename);
-//         fs.rename(req.file.path, newFilePath, (renameErr) => {
-//             if (renameErr) {
-//                 console.error("File rename error:", renameErr);
-//                 return res.status(500).json({ message: "Error moving profile image" });
-//             }
-
-//             // Construct the relative file path
-//             const relativeFilePath = path.join('ProfileImages', String(userId), req.file.filename);
-
-//             // Update ProfileIMG path in the database
-//             const updateSql = 'UPDATE users SET ProfileIMG = ? WHERE id = ?';
-//             db.query(updateSql, [relativeFilePath, userId], (updateErr) => {
-//                 if (updateErr) {
-//                     console.error("Database update error:", updateErr);
-//                     return res.status(500).json({ message: "Error updating profile image path" });
-//                 }
-
-//                 res.status(201).json({ 
-//                     message: "User added successfully", 
-//                     userId, 
-//                     ProfileIMG: relativeFilePath 
-//                 });
-//             }); 
-//         });
-//     });
-// });
 
 app.post('/user', (req, res) => {
     const { FullName, Email, Phone, Gender } = req.body;
@@ -253,6 +201,20 @@ app.delete('/scheme/:id', (req, res) => {
                 res.status(200).json({ message: "Scheme deleted successfully" });
             });
         });
+    });
+});
+
+//Blocks API
+
+app.get('/blocks', (req, res) => {
+    logger.log("debug", "Hello, World!"); //debug level as first param
+    const sql = 'SELECT * FROM blocks';
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+        return res.status(200).json(data);
     });
 });
 
