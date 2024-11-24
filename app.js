@@ -366,24 +366,52 @@ app.post('/verify-otp', (req, res) => {
         return res.status(400).json({ error: 'Phone number and OTP are required' });
     }
 
-    // Query to check OTP
-    const query = `
+    // Query to verify OTP
+    const verifyOtpQuery = `
         SELECT * FROM otp_table
         WHERE phone_number = ? AND otp = ? AND expires_at > NOW()
     `;
 
-    db.query(query, [phoneNumber, otp], (err, results) => {
+    db.query(verifyOtpQuery, [phoneNumber, otp], (err, otpResults) => {
         if (err) {
             console.error('Error verifying OTP:', err);
             return res.status(500).json({ error: 'Failed to verify OTP' });
         }
 
-        if (results.length === 0) {
+        if (otpResults.length === 0) {
             return res.status(400).json({ error: 'Invalid or expired OTP' });
         }
 
-        // Success response
-        res.status(200).json({ message: 'OTP verified successfully' });
+        // Query to check if user exists
+        const getUserQuery = `
+            SELECT id AS userId, fullname AS userName, is_worker AS isWorker
+            FROM users
+            WHERE phone = ?
+        `;
+
+        db.query(getUserQuery, [phoneNumber], (err, userResults) => {
+            if (err) {
+                console.error('Error fetching user details:', err);
+                return res.status(500).json({ error: 'Failed to fetch user details' });
+            }
+
+            if (userResults.length === 0) {
+                // User does not exist
+                return res.status(200).json({
+                    isExistingUser: 0,
+                    message: 'OTP verified, but user not registered'
+                });
+            }
+
+            // User exists, return details
+            const user = userResults[0];
+            res.status(200).json({
+                isExistingUser: true,
+                userName: user.userName,
+                userId: user.userId,
+                isWorker: user.isWorker // Convert to boolean
+            });
+        });
     });
 });
 
