@@ -1,4 +1,6 @@
 require('dotenv').config();
+
+var jwt = require('jsonwebtoken');
 const logger = require("./logger");
 const express = require('express')
 const mysql = require('mysql')
@@ -8,6 +10,7 @@ const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const { log } = require('console');
 
 const app = express()
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }); // 100 requests per 15 minutes
@@ -17,6 +20,8 @@ app.use(cors())
 app.use(helmet());
 app.use(express.json());
 app.use('/schemes', express.static(path.join(__dirname, 'schemes')));
+
+const UserSecretKey = "SecretKey"
 
 
 const db = mysql.createConnection({
@@ -283,6 +288,34 @@ app.post('/MPR', (req, res) => {
 
         return res.status(201).json({ message: "MPR added successfully", blockId: data.insertId });
     });  
+});
+
+
+//Token API
+app.get('/GetUserToken', (req, res) => {
+    const { UserId } = req.body;
+    const sql = 'SELECT * FROM users WHERE id = ?';
+    db.query(sql, [UserId], (err, data) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+
+        if (data.length === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        jwt.sign({UserId},UserSecretKey,{expiresIn:'300s'},(err,token)=>{
+            if(err){
+                res.json(err)
+            }
+            else{
+                res.json({
+                    token
+                })
+            }
+        })
+    });
 });
 
 
