@@ -239,10 +239,26 @@ app.post('/block', (req, res) => {
 
 //MPR API
 
-app.get('/MPR', (req, res) => {
+app.get('/getallMPR', (req, res) => {
     logger.log("debug", "Hello, World!"); //debug level as first param
     const sql = 'SELECT * FROM MonthlyProgressReport';
     db.query(sql, (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: "Internal Server Error" });
+        }
+        return res.status(200).json(data);
+    });
+});
+
+app.get('/MPR', (req, res) => {
+    const { StartMonth, EndMonth, StartYear, EndYear } = req.body;
+    if (!StartMonth || !EndMonth || !StartYear || !EndYear ) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+    logger.log("debug", "Hello, World!"); //debug level as first param
+    const sql = 'SELECT * FROM `MonthlyProgressReport` WHERE StartMonth=? AND EndMonth=? AND StartYear=? AND EndYear=?';
+    db.query(sql, [StartMonth, EndMonth, StartYear, EndYear], (err, data) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ message: "Internal Server Error" });
@@ -266,7 +282,7 @@ app.post('/MPR', (req, res) => {
         }
 
         return res.status(201).json({ message: "MPR added successfully", blockId: data.insertId });
-    });
+    });  
 });
 
 
