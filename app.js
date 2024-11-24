@@ -79,7 +79,7 @@ app.get('/user/:id', (req, res) => {
 
 
 app.post('/user', (req, res) => {
-    const { FullName, Email, Phone, Gender } = req.body;
+    const { FullName, Phone } = req.body;
 
     // Check if all required fields are provided
     if (!FullName || !Phone ) {
@@ -215,6 +215,25 @@ app.get('/blocks', (req, res) => {
             return res.status(500).json({ message: "Internal Server Error" });
         }
         return res.status(200).json(data);
+    });
+});
+
+app.post('/block', (req, res) => {
+    const { Name } = req.body;
+
+    // Check if all required fields are provided
+    if (!Name ) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const sql = 'INSERT INTO blocks (name) VALUES (?)';
+    db.query(sql, [Name], (err, data) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ message: err });
+        }
+
+        return res.status(201).json({ message: "Block added successfully", blockId: data.insertId });
     });
 });
 
