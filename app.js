@@ -95,7 +95,7 @@ app.post('/user', (req, res) => {
     db.query(sql, [FullName, Phone], (err, data) => {
         if (err) {
             console.error("Database error:", err);
-            return res.status(500).json({ message: err });
+            return res.status(500).json({ message: "User Already Exists" });
         }
 
         return res.status(201).json({ message: "User added successfully", userId: data.insertId });
