@@ -84,15 +84,15 @@ app.get('/user/:id', (req, res) => {
 
 
 app.post('/user', (req, res) => {
-    const { FullName, Phone } = req.body;
+    const { fullname, phone } = req.body;
 
     // Check if all required fields are provided
-    if (!FullName || !Phone ) {
+    if (!fullname || !phone ) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
     const sql = 'INSERT INTO users (FullName, Phone) VALUES (?, ?)';
-    db.query(sql, [FullName, Phone], (err, data) => {
+    db.query(sql, [fullname, phone], (err, data) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json({ message: "User Already Exists" });
