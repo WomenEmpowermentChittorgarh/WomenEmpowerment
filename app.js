@@ -319,6 +319,47 @@ app.get('/GetUserToken', (req, res) => {
 });
 
 
+//OTP API
+app.post('/login', (req, res) => {
+    const { phoneNumber } = req.body;
+
+    if (!phoneNumber) {
+        return res.status(400).json({ error: 'Phone number is required' });
+    }
+
+    // Generate OTP
+    const otp = generateOTP();
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // OTP expires in 5 minutes
+
+    // Store OTP in MySQL
+    const query = `
+        INSERT INTO otp_table
+        (phone_number, otp, expires_at)
+        VALUES (?, ?, ?)
+    `;
+
+    db.query(query, [phoneNumber, otp, expiresAt], (err, result) => {
+        if (err) {
+            console.error('Error saving OTP:', err);
+            return res.status(500).json({ error: 'Failed to save OTP' });
+        }
+
+        // Mock sending OTP (replace with an actual SMS service)
+        console.log(`Sending OTP ${otp} to ${phoneNumber}`);
+
+        res.status(200).json({
+            message: 'OTP sent successfully',
+            phoneNumber
+        });
+    });
+});
+
+
+const generateOTP = () => {
+    return Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
+};
+
+
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
     console.log(`Server started and listening on port ${PORT}`);
