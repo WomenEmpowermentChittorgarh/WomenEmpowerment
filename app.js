@@ -21,7 +21,7 @@ app.use(helmet());
 app.use(express.json());
 app.use('/schemes', express.static(path.join(__dirname, 'schemes')));
 
-const UserSecretKey = "SecretKey"
+const UserSecretKey = "WomenEmpowerment@ICDS#"
 
 
 const db = mysql.createConnection({
