@@ -6,14 +6,14 @@ const express = require('express')
 const mysql = require('mysql')
 const cors = require('cors')
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
+// const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const { log } = require('console');
 
 const app = express()
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }); // 100 requests per 15 minutes
+// const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }); // 100 requests per 15 minutes
 
 app.use(limiter);
 app.use(cors())
@@ -305,7 +305,7 @@ app.get('/GetUserToken', (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        jwt.sign({UserId},UserSecretKey,{expiresIn:'300s'},(err,token)=>{
+        jwt.sign({UserId},UserSecretKey,{expiresIn:'432000s'},(err,token)=>{
             if(err){
                 res.json(err)
             }
