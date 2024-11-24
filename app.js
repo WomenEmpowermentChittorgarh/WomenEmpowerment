@@ -208,7 +208,7 @@ app.delete('/scheme/:id', (req, res) => {
 
 app.get('/blocks', (req, res) => {
     logger.log("debug", "Hello, World!"); //debug level as first param
-    const sql = 'SELECT * FROM blocks';
+    const sql = 'SELECT * FROM blocks ORDER BY name';
     db.query(sql, (err, data) => {
         if (err) {
             console.error(err);
