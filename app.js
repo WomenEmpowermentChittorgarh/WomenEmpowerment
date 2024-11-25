@@ -254,6 +254,8 @@ app.get('/blocks', VerifyUserToken, (req, res) => {
             res.status(403).json({
                 result:'Invalid Token'
             })
+        }
+        else{
             const sql = 'SELECT * FROM blocks ORDER BY name';
             db.query(sql, (err, data) => {
                 if (err) {
@@ -262,8 +264,6 @@ app.get('/blocks', VerifyUserToken, (req, res) => {
                 }
                 return res.status(200).json(responseHandler("Success", 200, "Block Fetched Successfully", {data}));
             });
-        }
-        else{
         }
     })
 });
