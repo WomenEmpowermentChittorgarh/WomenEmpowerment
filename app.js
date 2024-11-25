@@ -347,7 +347,7 @@ app.get('/GetUserToken', (req, res) => {
 });
 
 function VerifyUserToken(req,res,next ){
-    const bearerHeader = req.headers['UserAuthToken']
+    const bearerHeader = req.headers['userauthtoken']
     if(typeof bearerHeader !== 'undefined'){
 
     }
