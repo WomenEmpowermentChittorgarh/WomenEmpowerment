@@ -133,7 +133,7 @@ app.post('/user_details', (req, res) => {
 
 //Schemes API
 
-app.get('/schemes', (req, res) => {
+app.get('/schemes', VerifyUserToken, (req, res) => {
     const sql = 'SELECT * FROM schemes';
     db.query(sql, (err, data) => {
         if (err) {
@@ -345,6 +345,18 @@ app.get('/GetUserToken', (req, res) => {
         })
     });
 });
+
+function VerifyUserToken(req,res,next ){
+    const bearerHeader = req.headers['UserAuthToken']
+    if(typeof bearerHeader !== 'undefined'){
+
+    }
+    else{
+        res.send({
+            result:'Invalid Token'
+        })
+    }
+}
 
 
 //OTP API
