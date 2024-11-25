@@ -47,7 +47,14 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-
+const responseHandler = (status, statusCode, message, payload = null) => {
+    return {
+        statusCode,
+        status,
+        message,
+        payload
+    };
+};
 
 //Users API
 
@@ -341,16 +348,16 @@ app.post('/login', (req, res) => {
     db.query(query, [phoneNumber, otp, expiresAt], (err, result) => {
         if (err) {
             console.error('Error saving OTP:', err);
-            return res.status(500).json({ error: 'Failed to save OTP' });
+            return res.status(500).json(responseHandler("Failure", 500, "Failed to save OTP", null));
         }
 
         // Mock sending OTP (replace with an actual SMS service)
         console.log(`Sending OTP ${otp} to ${phoneNumber}`);
 
-        res.status(200).json({
+        res.status(200).json(responseHandler("Failure", 500, "Failed to save OTP", {
             message: 'OTP sent successfully',
             phoneNumber
-        });
+        }));
     });
 });
 
@@ -363,7 +370,7 @@ app.post('/verify-otp', (req, res) => {
     const { phoneNumber, otp } = req.body;
 
     if (!phoneNumber || !otp) {
-        return res.status(400).json({ error: 'Phone number and OTP are required' });
+        return res.status(400).json(responseHandler("Failure", 400, "Phone number and OTP are required", null));
     }
 
     // Query to verify OTP
@@ -375,11 +382,11 @@ app.post('/verify-otp', (req, res) => {
     db.query(verifyOtpQuery, [phoneNumber, otp], (err, otpResults) => {
         if (err) {
             console.error('Error verifying OTP:', err);
-            return res.status(500).json({ error: 'Failed to verify OTP' });
+            return res.status(500).json(responseHandler("Failure", 500, "Failed to verify OTP", null));
         }
 
         if (otpResults.length === 0) {
-            return res.status(400).json({ error: 'Invalid or expired OTP' });
+            return res.status(400).json(responseHandler("Failure", 400, "Invalid or expired OTP", null));
         }
 
         // Query to check if user exists
@@ -392,25 +399,25 @@ app.post('/verify-otp', (req, res) => {
         db.query(getUserQuery, [phoneNumber], (err, userResults) => {
             if (err) {
                 console.error('Error fetching user details:', err);
-                return res.status(500).json({ error: 'Failed to fetch user details' });
+                return res.status(500).json(responseHandler("Failure", 400, "Failed to fetch user details", null));
             }
 
             if (userResults.length === 0) {
                 // User does not exist
-                return res.status(200).json({
+                return res.status(200).json(responseHandler("Success", 200, "Data Fetched", {
                     isExistingUser: 0,
                     message: 'OTP verified, but user not registered'
-                });
+                }));
             }
 
             // User exists, return details
             const user = userResults[0];
-            res.status(200).json({
+            res.status(200).json(responseHandler("Success", 200, "Data Fetched", {
                 isExistingUser: true,
                 userName: user.userName,
                 userId: user.userId,
                 isWorker: user.isWorker // Convert to boolean
-            });
+            }));
         });
     });
 });
