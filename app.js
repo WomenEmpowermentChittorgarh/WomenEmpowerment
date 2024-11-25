@@ -66,7 +66,7 @@ app.get('/users', (req, res) => {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, " Internal Server Error"));
         }
-        return res.status(200).json(responseHandler("Success", 200, "User updated successfully", {data: data}));
+        return res.status(200).json(responseHandler("Success", 200, "Users Fetched successfully", {data: data}));
     });
 });
 
@@ -82,10 +82,9 @@ app.get('/user/:id', (req, res) => {
         }
 
         if (data.length === 0) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json(responseHandler("Not Found", 404, " User not found"));
         }
-
-        return res.status(200).json(data[0]);
+        return res.status(200).json(responseHandler("Success", 200, "User Fetched successfully", {data: data[0]}));
     });
 });
 
