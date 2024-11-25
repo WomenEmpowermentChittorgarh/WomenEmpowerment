@@ -262,7 +262,7 @@ app.get('/blocks', VerifyUserToken, (req, res) => {
                     console.error(err);
                     return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
                 }
-                return res.status(200).json(responseHandler("Success", 200, "Block Fetched Successfully", {data}));
+                return res.status(200).json(responseHandler("Success", 200, "Blocks Fetched Successfully", {data}));
             });
         }
     })
