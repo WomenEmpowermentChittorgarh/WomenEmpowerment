@@ -135,9 +135,7 @@ app.post('/user_details', (req, res) => {
 app.get('/schemes', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, authData) => {
         if (err) {
-            res.status(403).json({
-                result: 'Invalid Token'
-            });
+            res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         } else {
             const sql = 'SELECT * FROM schemes';
             db.query(sql, (err, data) => {
