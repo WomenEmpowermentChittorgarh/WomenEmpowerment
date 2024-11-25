@@ -138,9 +138,9 @@ app.get('/schemes', (req, res) => {
     db.query(sql, (err, data) => {
         if (err) {
             console.error("Database error:", err);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
-        res.status(200).json(data);
+        res.status(200).json(responseHandler("Success", 200, "Data Fetched", {data}));
     });
 });
 
@@ -241,14 +241,13 @@ app.delete('/scheme/:id', (req, res) => {
 //Blocks API
 
 app.get('/blocks', (req, res) => {
-    logger.log("debug", "Hello, World!"); //debug level as first param
     const sql = 'SELECT * FROM blocks ORDER BY name';
     db.query(sql, (err, data) => {
         if (err) {
             console.error(err);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
-        return res.status(200).json(data);
+        return res.status(200).json(responseHandler("Success", 200, "Block Fetched Successfully", {data}));
     });
 });
 
