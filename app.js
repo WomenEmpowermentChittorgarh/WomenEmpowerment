@@ -347,10 +347,10 @@ app.post('/MPR', (req, res) => {
 
 
 //Token API
-app.get('/GetUserToken', (req, res) => {
-    const { UserId } = req.body;
+app.get('/getUserToken', (req, res) => {
+    const { userId } = req.body;
     const sql = 'SELECT * FROM users WHERE id = ?';
-    db.query(sql, [UserId], (err, data) => {
+    db.query(sql, [userId], (err, data) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json({ message: "Internal Server Error" });
@@ -360,7 +360,7 @@ app.get('/GetUserToken', (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        jwt.sign({UserId},UserSecretKey,{expiresIn:'432000s'},(err,token)=>{
+        jwt.sign({userId},UserSecretKey,{expiresIn:'432000s'},(err,token)=>{
             if(err){
                 res.json(err)
             }
