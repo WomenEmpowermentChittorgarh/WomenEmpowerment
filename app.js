@@ -89,25 +89,47 @@ app.get('/user/:id', (req, res) => {
     });
 });
 
-
-app.post('/user', (req, res) => {
+app.post('/user_details', (req, res) => {
     const { fullname, phone } = req.body;
 
     // Check if all required fields are provided
-    if (!fullname || !phone ) {
+    if (!fullname || !phone) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
-    const sql = 'INSERT INTO users (FullName, Phone) VALUES (?, ?)';
-    db.query(sql, [fullname, phone], (err, data) => {
+    const findUserSql = 'SELECT * FROM users WHERE Phone = ?';
+    const updateUserSql = 'UPDATE users SET FullName = ? WHERE Phone = ?';
+    const insertUserSql = 'INSERT INTO users (FullName, Phone) VALUES (?, ?)';
+
+    db.query(findUserSql, [phone], (err, results) => {
         if (err) {
             console.error("Database error:", err);
-            return res.status(500).json({ message: "User Already Exists" });
+            return res.status(500).json(responseHandler("Failure", 500, " Internal Server Error"));
         }
 
-        return res.status(201).json({ message: "User added successfully", userId: data.insertId });
+        if (results.length > 0) {
+            // User already exists, update details and return userId
+            const userId = results[0].id; // Assuming `id` is the primary key column
+            db.query(updateUserSql, [fullname, phone], (updateErr) => {
+                if (updateErr) {
+                    console.error("Update error:", updateErr);
+                    return res.status(500).json(responseHandler("Failure", 500, "Failed to update user details"));
+                }
+                return res.status(200).json(responseHandler("Success", 200, "User updated successfully", {userId: userId}));
+            });
+        } else {
+            // User does not exist, insert a new user
+            db.query(insertUserSql, [fullname, phone], (insertErr, data) => {
+                if (insertErr) {
+                    console.error("Insert error:", insertErr);
+                    return res.status(500).json(responseHandler("Failure", 500, "Failed to add new user"));
+                }
+                return res.status(200).json(responseHandler("Success", 200, "User added successfully", {userId: data.insertId}));
+            });
+        }
     });
 });
+
 
 //Schemes API
 
