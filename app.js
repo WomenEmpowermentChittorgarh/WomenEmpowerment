@@ -134,14 +134,23 @@ app.post('/user_details', (req, res) => {
 //Schemes API
 
 app.get('/schemes', VerifyUserToken, (req, res) => {
-    const sql = 'SELECT * FROM schemes';
-    db.query(sql, (err, data) => {
-        if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+    jwt.verify(req.token, UserSecretKey, (err, authData)=>{
+        if (err){
+            res.send({
+                result:'Invalid Token'
+            })
         }
-        res.status(200).json(responseHandler("Success", 200, "Data Fetched", {data}));
-    });
+        else{
+            const sql = 'SELECT * FROM schemes';
+            db.query(sql, (err, data) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+                }
+                res.status(200).json(responseHandler("Success", 200, "Data Fetched", {data}));
+            });
+        }
+    })
 });
 
 app.post('/scheme', upload.single('Image'), (req, res) => {
@@ -349,7 +358,10 @@ app.get('/GetUserToken', (req, res) => {
 function VerifyUserToken(req,res,next ){
     const bearerHeader = req.headers['userauthtoken']
     if(typeof bearerHeader !== 'undefined'){
-
+        const bearer = bearerHeader.split(' ')
+        const token = bearer[1]
+        req.token = token
+        next()
     }
     else{
         res.send({
