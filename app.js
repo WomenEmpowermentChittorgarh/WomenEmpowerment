@@ -136,7 +136,7 @@ app.post('/user_details', (req, res) => {
 app.get('/schemes', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, authData)=>{
         if (err){
-            res.send({
+            res.status(403)({
                 result:'Invalid Token'
             })
         }
@@ -263,7 +263,7 @@ app.get('/blocks', VerifyUserToken, (req, res) => {
 app.post('/block', (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, authData)=>{
         if (err){
-            res.send({
+            res.status(403)({
                 result:'Invalid Token'
             })
         }
@@ -373,7 +373,7 @@ function VerifyUserToken(req,res,next ){
         next()
     }
     else{
-        res.send({
+        res.status(403)({
             result:'Invalid Token'
         })
     }
