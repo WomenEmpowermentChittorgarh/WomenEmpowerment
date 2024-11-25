@@ -143,7 +143,7 @@ app.get('/schemes', VerifyUserToken, (req, res) => {
                     console.error("Database error:", err);
                     return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
                 }
-                res.status(200).json(responseHandler("Success", 200, "Data Fetched", { data }));
+                res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { data }));
             });
         }
     });
@@ -181,7 +181,7 @@ app.post('/scheme', upload.single('Image'), (req, res) => {
             if (renameErr) {
                 console.error("File rename error:", renameErr);
                 res.status(500).json(responseHandler("Failure", 500, "Error moving image"));
-                return es.status(500).json(responseHandler("Failure", 500, "Error moving image"));
+                return res.status(500).json(responseHandler("Failure", 500, "Error moving image"));
             }
 
             // Construct the relative file path
@@ -339,8 +339,8 @@ app.post('/MPR', (req, res) => {
             console.error("Database error:", err);            
             return res.status(500).json(responseHandler("Failure", 500, "Database error"));
         }
-
-        return res.status(201).json({ message: "MPR added successfully", blockId: data.insertId });
+        return res.status(200).json(responseHandler("Success", 200, "MPR added successfully", { blockId: data.insertId }));
+        // return res.status(201).json({ message: "MPR added successfully", blockId: data.insertId });
     });  
 });
 
@@ -364,9 +364,10 @@ app.get('/getUserToken', (req, res) => {
                 res.json(err)
             }
             else{
-                res.json({
-                    token
-                })
+                res.status(200).json(responseHandler("Success", 200, "Token Generated Succesfully", {token}));
+                // res.json({
+                //     token
+                // })
             }
         })
     });
