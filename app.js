@@ -354,7 +354,7 @@ app.post('/login', (req, res) => {
         // Mock sending OTP (replace with an actual SMS service)
         console.log(`Sending OTP ${otp} to ${phoneNumber}`);
 
-        res.status(200).json(responseHandler("Failure", 200, "OTP sent successfully", {
+        res.status(200).json(responseHandler("Success", 200, "OTP sent successfully", {
             phoneNumber
         }));
     });
