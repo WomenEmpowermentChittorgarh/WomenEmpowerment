@@ -66,7 +66,7 @@ app.get('/users', (req, res) => {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, " Internal Server Error"));
         }
-        return res.status(200).json(data);
+        return res.status(200).json(responseHandler("Success", 200, "User updated successfully", {data: data}));
     });
 });
 
