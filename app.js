@@ -464,7 +464,7 @@ app.post('/verify-otp', (req, res) => {
 
             if (userResults.length === 0) {
                 // User does not exist
-                return res.status(200).json(responseHandler("Success", 200, "Data Fetched", {
+                return res.status(200).json(responseHandler("Success", 200, "OTP verified", {
                     isExistingUser: 0,
                     message: 'OTP verified, but user not registered'
                 }));
