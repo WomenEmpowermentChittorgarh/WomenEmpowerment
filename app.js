@@ -64,7 +64,7 @@ app.get('/users', (req, res) => {
     db.query(sql, (err, data) => {
         if (err) {
             console.error(err);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(500).json(responseHandler("Failure", 500, " Internal Server Error"));
         }
         return res.status(200).json(data);
     });
@@ -78,7 +78,7 @@ app.get('/user/:id', (req, res) => {
     db.query(sql, [userId], (err, data) => {
         if (err) {
             console.error("Database error:", err);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(500).json(responseHandler("Failure", 500, " Internal Server Error"));
         }
 
         if (data.length === 0) {
@@ -158,7 +158,8 @@ app.post('/scheme', upload.single('Image'), (req, res) => {
 
     // Validate input fields
     if (!SchemeName || !Description || !WebsiteUrl || !req.file) {
-        return res.status(400).json({ message: "All fields are required, including Image" });
+        res.status(400).json(responseHandler("Alert", 400, " All fields are required, including Image"));
+        return res.status(400).json(responseHandler("Alert", 400, " All fields are required, including Image"));
     }
 
     // Insert the scheme data into the database
@@ -166,7 +167,7 @@ app.post('/scheme', upload.single('Image'), (req, res) => {
     db.query(sql, [SchemeName, Description, WebsiteUrl, ''], (err, data) => {
         if (err) {
             console.error("Database error:", err);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
 
         const schemeId = data.insertId;
@@ -182,7 +183,8 @@ app.post('/scheme', upload.single('Image'), (req, res) => {
         fs.rename(req.file.path, newFilePath, (renameErr) => {
             if (renameErr) {
                 console.error("File rename error:", renameErr);
-                return res.status(500).json({ message: "Error moving image" });
+                res.status(500).json(responseHandler("Failure", 500, "Error moving image"));
+                return es.status(500).json(responseHandler("Failure", 500, "Error moving image"));
             }
 
             // Construct the relative file path
@@ -193,7 +195,7 @@ app.post('/scheme', upload.single('Image'), (req, res) => {
             db.query(updateSql, [relativeFilePath, schemeId], (updateErr) => {
                 if (updateErr) {
                     console.error("Database update error:", updateErr);
-                    return res.status(500).json({ message: "Error updating image path" });
+                    return res.status(500).json(responseHandler("Failure", 500, "Error updating image path"));
                 }
 
                 res.status(201).json({
@@ -214,11 +216,11 @@ app.delete('/scheme/:id', (req, res) => {
     db.query(sqlSelect, [schemeId], (err, result) => {
         if (err) {
             console.error("Database error:", err);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
 
         if (result.length === 0) {
-            return res.status(404).json({ message: "Scheme not found" });
+            return res.status(404).json(responseHandler("Not Found", 404, "Scheme not found"));
         }
 
         const imagePath = result[0].Image;
@@ -231,14 +233,14 @@ app.delete('/scheme/:id', (req, res) => {
         db.query(sqlDelete, [schemeId], (deleteErr) => {
             if (deleteErr) {
                 console.error("Database error during deletion:", deleteErr);
-                return res.status(500).json({ message: "Error deleting scheme from database" });
+                return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme from database"));
             }
 
             // Delete the folder containing the image
             fs.rm(schemeDir, { recursive: true, force: true }, (fsErr) => {
                 if (fsErr) {
                     console.error("File system error during folder deletion:", fsErr);
-                    return res.status(500).json({ message: "Error deleting scheme folder" });
+                    return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme folder"));
                 }
 
                 res.status(200).json({ message: "Scheme deleted successfully" });
@@ -278,17 +280,17 @@ app.post('/block', (req, res) => {
         }
         else{
             const { Name } = req.body;
-        
+            
             // Check if all required fields are provided
             if (!Name ) {
-                return res.status(400).json({ message: "All fields are required" });
+                return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
             }
         
             const sql = 'INSERT INTO blocks (name) VALUES (?)';
             db.query(sql, [Name], (err, data) => {
                 if (err) {
                     console.error("Database error:", err);
-                    return res.status(500).json({ message: err });
+                    return res.status(500).json(responseHandler("Failure", 500, "Database error"));
                 }
         
                 return res.status(201).json({ message: "Block added successfully", blockId: data.insertId });
@@ -305,7 +307,7 @@ app.get('/getallMPR', (req, res) => {
     db.query(sql, (err, data) => {
         if (err) {
             console.error(err);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
         return res.status(200).json(data);
     });
@@ -313,15 +315,15 @@ app.get('/getallMPR', (req, res) => {
 
 app.get('/MPR', (req, res) => {
     const { StartMonth, EndMonth, StartYear, EndYear } = req.body;
-    if (!StartMonth || !EndMonth || !StartYear || !EndYear ) {
-        return res.status(400).json({ message: "All fields are required" });
+    if (!StartMonth || !EndMonth || !StartYear || !EndYear ) {        
+        return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
     }
     logger.log("debug", "Hello, World!"); //debug level as first param
     const sql = 'SELECT * FROM `MonthlyProgressReport` WHERE StartMonth=? AND EndMonth=? AND StartYear=? AND EndYear=?';
     db.query(sql, [StartMonth, EndMonth, StartYear, EndYear], (err, data) => {
         if (err) {
             console.error(err);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
         return res.status(200).json(data);
     });
@@ -332,13 +334,13 @@ app.post('/MPR', (req, res) => {
 
     // Check if all required fields are provided
     if (!StartMonth || !EndMonth || !StartYear || !EndYear || !Block || !PreviousMonthCasesRecieved || !CurrentMonthCasesRecieved || !TotalCasesRecieved || !PreviousMonthCasesResolved || !CurrentMonthCasesResolved || !TotalCasesResolved || !CasesWithFir || !MedicalAssistance || !ShelterHomeAssistance || !DIRAssistance || !Other || !PromotionalActivitiesNumber || !NumberOfMeetingsOfDistrictMahilaSamadhanSamiti || !Comments) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(500).json(responseHandler("Bad Request", 500, "All fields are required"));
     }
     const sql = 'INSERT INTO MonthlyProgressReport (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comment) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
     db.query(sql, [ StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments ], (err, data) => {
         if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json({ message: err });
+            console.error("Database error:", err);            
+            return res.status(500).json(responseHandler("Failure", 500, "Database error"));
         }
 
         return res.status(201).json({ message: "MPR added successfully", blockId: data.insertId });
@@ -353,11 +355,11 @@ app.get('/getUserToken', (req, res) => {
     db.query(sql, [userId], (err, data) => {
         if (err) {
             console.error("Database error:", err);
-            return res.status(500).json({ message: "Internal Server Error" });
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
 
-        if (data.length === 0) {
-            return res.status(404).json({ message: "User not found" });
+        if (data.length === 0) {            
+            return res.status(404).json(responseHandler("not found", 404, "User not found"));
         }
 
         jwt.sign({userId},UserSecretKey,{expiresIn:'432000s'},(err,token)=>{
@@ -382,9 +384,7 @@ function VerifyUserToken(req,res,next ){
         next()
     }
     else{
-        res.status(403).json({
-            result:'Invalid Token'
-        })
+        res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
     }
 }
 
@@ -394,7 +394,7 @@ app.post('/login', (req, res) => {
     const { phoneNumber } = req.body;
 
     if (!phoneNumber) {
-        return res.status(400).json({ error: 'Phone number is required' });
+        return res.status(400).json(responseHandler("Bad Request", 400, "Phone number is required"));
     }
 
     // Generate OTP
@@ -432,7 +432,7 @@ app.post('/verify-otp', (req, res) => {
     const { phoneNumber, otp } = req.body;
 
     if (!phoneNumber || !otp) {
-        return res.status(400).json(responseHandler("Failure", 400, "Phone number and OTP are required", null));
+        return res.status(400).json(responseHandler("Bad Request", 400, "Phone number and OTP are required", null));
     }
 
     // Query to verify OTP
