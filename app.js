@@ -99,7 +99,7 @@ app.post('/user_details', (req, res) => {
 
     const findUserSql = 'SELECT * FROM users WHERE Phone = ?';
     const updateUserSql = 'UPDATE users SET FullName = ? WHERE Phone = ?';
-    const insertUserSql = 'INSERT INTO users (FullName, Phone) VALUES (?, ?)';
+    const insertUserSql = 'INSERT INTO users (FullName, Phone, is_worker) VALUES (?, ?, 0)';
 
     db.query(findUserSql, [phone], (err, results) => {
         if (err) {
