@@ -93,7 +93,7 @@ app.post('/user_details', (req, res) => {
 
     // Check if all required fields are provided
     if (!fullname || !phone) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(400).json(responseHandler("Bad Request", 400, " All fields are required"));
     }
 
     const findUserSql = 'SELECT * FROM users WHERE Phone = ?';
@@ -242,7 +242,7 @@ app.delete('/scheme/:id', (req, res) => {
                     return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme folder"));
                 }
 
-                res.status(200).json({ message: "Scheme deleted successfully" });
+                res.status(200).json(responseHandler("Success", 200, "Scheme deleted successfully"));
             });
         });
     });
@@ -291,8 +291,8 @@ app.post('/block', (req, res) => {
                     console.error("Database error:", err);
                     return res.status(500).json(responseHandler("Failure", 500, "Database error"));
                 }
-        
-                return res.status(201).json({ message: "Block added successfully", blockId: data.insertId });
+                return res.status(200).json(responseHandler("Success", 200, "Block added successfully"));
+                // return res.status(201).json({ message: "Block added successfully", blockId: data.insertId });
             });
         }
     })
@@ -307,8 +307,8 @@ app.get('/getallMPR', (req, res) => {
         if (err) {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
-        }
-        return res.status(200).json(data);
+        }        
+        return res.status(200).json(responseHandler("Success", 200, "MPR's Fetched Successfully", {data}));
     });
 });
 
@@ -324,7 +324,7 @@ app.get('/MPR', (req, res) => {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
-        return res.status(200).json(data);
+        return res.status(200).json(responseHandler("Success", 200, "MPR Fetched Successfully", {data}));
     });
 });
 
