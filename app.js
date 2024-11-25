@@ -249,7 +249,7 @@ app.delete('/scheme/:id', (req, res) => {
 
 //Blocks API
 
-app.get('/blocks', (req, res) => {
+app.get('/blocks', VerifyUserToken, (req, res) => {
     const sql = 'SELECT * FROM blocks ORDER BY name';
     db.query(sql, (err, data) => {
         if (err) {
@@ -261,22 +261,31 @@ app.get('/blocks', (req, res) => {
 });
 
 app.post('/block', (req, res) => {
-    const { Name } = req.body;
-
-    // Check if all required fields are provided
-    if (!Name ) {
-        return res.status(400).json({ message: "All fields are required" });
-    }
-
-    const sql = 'INSERT INTO blocks (name) VALUES (?)';
-    db.query(sql, [Name], (err, data) => {
-        if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json({ message: err });
+    jwt.verify(req.token, UserSecretKey, (err, authData)=>{
+        if (err){
+            res.send({
+                result:'Invalid Token'
+            })
         }
-
-        return res.status(201).json({ message: "Block added successfully", blockId: data.insertId });
-    });
+        else{
+            const { Name } = req.body;
+        
+            // Check if all required fields are provided
+            if (!Name ) {
+                return res.status(400).json({ message: "All fields are required" });
+            }
+        
+            const sql = 'INSERT INTO blocks (name) VALUES (?)';
+            db.query(sql, [Name], (err, data) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return res.status(500).json({ message: err });
+                }
+        
+                return res.status(201).json({ message: "Block added successfully", blockId: data.insertId });
+            });
+        }
+    })
 });
 
 //MPR API
