@@ -134,24 +134,24 @@ app.post('/user_details', (req, res) => {
 //Schemes API
 
 app.get('/schemes', VerifyUserToken, (req, res) => {
-    jwt.verify(req.token, UserSecretKey, (err, authData)=>{
-        if (err){
-            res.status(403)({
-                result:'Invalid Token'
-            })
-        }
-        else{
+    jwt.verify(req.token, UserSecretKey, (err, authData) => {
+        if (err) {
+            res.status(403).json({
+                result: 'Invalid Token'
+            });
+        } else {
             const sql = 'SELECT * FROM schemes';
             db.query(sql, (err, data) => {
                 if (err) {
                     console.error("Database error:", err);
                     return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
                 }
-                res.status(200).json(responseHandler("Success", 200, "Data Fetched", {data}));
+                res.status(200).json(responseHandler("Success", 200, "Data Fetched", { data }));
             });
         }
-    })
+    });
 });
+
 
 app.post('/scheme', upload.single('Image'), (req, res) => {
     const { SchemeName, Description, WebsiteUrl } = req.body;
@@ -250,20 +250,29 @@ app.delete('/scheme/:id', (req, res) => {
 //Blocks API
 
 app.get('/blocks', VerifyUserToken, (req, res) => {
-    const sql = 'SELECT * FROM blocks ORDER BY name';
-    db.query(sql, (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+    jwt.verify(req.token, UserSecretKey, (err, authData)=>{
+        if (err){
+            res.status(403).json({
+                result:'Invalid Token'
+            })
+            const sql = 'SELECT * FROM blocks ORDER BY name';
+            db.query(sql, (err, data) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+                }
+                return res.status(200).json(responseHandler("Success", 200, "Block Fetched Successfully", {data}));
+            });
         }
-        return res.status(200).json(responseHandler("Success", 200, "Block Fetched Successfully", {data}));
-    });
+        else{
+        }
+    })
 });
 
 app.post('/block', (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, authData)=>{
         if (err){
-            res.status(403)({
+            res.status(403).json({
                 result:'Invalid Token'
             })
         }
