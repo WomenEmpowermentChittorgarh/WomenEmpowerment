@@ -386,8 +386,7 @@ app.put('/MPR/:id', VerifyUserToken, (req, res) => {
                 result: 'Invalid Token'
             });
         } else {
-            // Extract the MPR ID from the URL parameter and the data from the request body
-            const mpr_id = req.params.id;
+            const mpr_id = req.params.id;  // Assuming this is an integer ID
             const { 
                 start_month, end_month, start_year, end_year, block, previous_month_cases_recieved,
                 current_month_cases_recieved, total_cases_recieved, previous_month_cases_resolved,
@@ -427,7 +426,7 @@ app.put('/MPR/:id', VerifyUserToken, (req, res) => {
                     other = ?, 
                     promotionalActivitiesNumber = ?, 
                     numberOfMeetingsOfDistrictMahilaSamadhanSamiti = ?, 
-                    Comment = ?, 
+                    comments = ?, 
                     updatedBy = ?, 
                     updatedAt = ? 
                 WHERE id = ?;
@@ -440,7 +439,7 @@ app.put('/MPR/:id', VerifyUserToken, (req, res) => {
                 current_month_cases_resolved, total_cases_resolved, cases_with_fir, medical_assistance,
                 shelter_home_assistance, dir_assistance, other, promotional_activities_number,
                 number_of_meetings_of_district_mahila_samadhan_samiti, comments, created_by, created_at, updated_at,
-                updated_by,mpr_id
+                updated_by,mpr_id // Ensure this is the correct ID value (integer or string)
             ], (err, data) => {
                 if (err) {
                     console.error("Database error:", err);            
@@ -454,6 +453,7 @@ app.put('/MPR/:id', VerifyUserToken, (req, res) => {
         }
     });
 });
+
 
 
 
