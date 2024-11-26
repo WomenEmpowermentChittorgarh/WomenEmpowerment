@@ -324,7 +324,7 @@ app.get('/getmprbymonthyear', (req, res) => {
     });
 });
 
-app.get('/getmpr/:id', (req, res) => {
+app.get('/getmpr/:id', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
             res.status(403).json({
