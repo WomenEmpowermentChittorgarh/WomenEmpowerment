@@ -66,7 +66,7 @@ app.get('/users', (req, res) => {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, " Internal Server Error"));
         }
-        return res.status(200).json(responseHandler("Success", 200, "Users Fetched successfully", {data: data}));
+        return res.status(200).json(responseHandler("Success", 200, "Users Fetched successfully", { data: data }));
     });
 });
 
@@ -84,7 +84,7 @@ app.get('/user/:id', (req, res) => {
         if (data.length === 0) {
             return res.status(404).json(responseHandler("Not Found", 404, " User not found"));
         }
-        return res.status(200).json(responseHandler("Success", 200, "User Fetched successfully", {data: data[0]}));
+        return res.status(200).json(responseHandler("Success", 200, "User Fetched successfully", { data: data[0] }));
     });
 });
 
@@ -114,7 +114,7 @@ app.post('/user_details', (req, res) => {
                     console.error("Update error:", updateErr);
                     return res.status(500).json(responseHandler("Failure", 500, "Failed to update user details"));
                 }
-                return res.status(200).json(responseHandler("Success", 200, "User updated successfully", {userId: userId}));
+                return res.status(200).json(responseHandler("Success", 200, "User updated successfully", { userId: userId }));
             });
         } else {
             // User does not exist, insert a new user
@@ -123,7 +123,7 @@ app.post('/user_details', (req, res) => {
                     console.error("Insert error:", insertErr);
                     return res.status(500).json(responseHandler("Failure", 500, "Failed to add new user"));
                 }
-                return res.status(200).json(responseHandler("Success", 200, "User added successfully", {userId: data.insertId}));
+                return res.status(200).json(responseHandler("Success", 200, "User added successfully", { userId: data.insertId }));
             });
         }
     });
@@ -249,38 +249,38 @@ app.delete('/scheme/:id', (req, res) => {
 //Blocks API
 
 app.get('/blocks', VerifyUserToken, (req, res) => {
-    jwt.verify(req.token, UserSecretKey, (err, authData)=>{
-        if (err){
+    jwt.verify(req.token, UserSecretKey, (err, authData) => {
+        if (err) {
             res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         }
-        else{
+        else {
             const sql = 'SELECT * FROM blocks ORDER BY name';
             db.query(sql, (err, data) => {
                 if (err) {
                     console.error(err);
                     return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
                 }
-                return res.status(200).json(responseHandler("Success", 200, "Blocks Fetched Successfully", {data}));
+                return res.status(200).json(responseHandler("Success", 200, "Blocks Fetched Successfully", { data }));
             });
         }
     })
 });
 
-app.post('/block', VerifyUserToken,  (req, res) => {
-    jwt.verify(req.token, UserSecretKey, (err, authData)=>{
-        if (err){
+app.post('/block', VerifyUserToken, (req, res) => {
+    jwt.verify(req.token, UserSecretKey, (err, authData) => {
+        if (err) {
             res.status(403).json({
-                result:'Invalid Token'
+                result: 'Invalid Token'
             })
         }
-        else{
+        else {
             const { Name } = req.body;
-            
+
             // Check if all required fields are provided
-            if (!Name ) {
+            if (!Name) {
                 return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
             }
-        
+
             const sql = 'INSERT INTO blocks (name) VALUES (?)';
             db.query(sql, [Name], (err, data) => {
                 if (err) {
@@ -303,14 +303,14 @@ app.get('/getallMPR', (req, res) => {
         if (err) {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
-        }        
-        return res.status(200).json(responseHandler("Success", 200, "MPR's Fetched Successfully", {data}));
+        }
+        return res.status(200).json(responseHandler("Success", 200, "MPR's Fetched Successfully", { data }));
     });
 });
 
 app.get('/MPR', (req, res) => {
     const { StartMonth, EndMonth, StartYear, EndYear } = req.body;
-    if (!StartMonth || !EndMonth || !StartYear || !EndYear ) {        
+    if (!StartMonth || !EndMonth || !StartYear || !EndYear) {
         return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
     }
     logger.log("debug", "Hello, World!"); //debug level as first param
@@ -320,66 +320,65 @@ app.get('/MPR', (req, res) => {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
-        return res.status(200).json(responseHandler("Success", 200, "MPR Fetched Successfully", {data}));
+        return res.status(200).json(responseHandler("Success", 200, "MPR Fetched Successfully", { data }));
     });
 });
 
-app.post('/MPR', VerifyUserToken, (req, res) => {
-    jwt.verify(req.token, UserSecretKey, (err, authData)=>{
-        if (err){
+app.post('/mpr', VerifyUserToken, (req, res) => {
+    jwt.verify(req.token, user_secret_key, (err, auth_data) => {
+        if (err) {
             res.status(403).json({
-                result:'Invalid Token'
-            })
-        }
-        else{
-            const { 
-                StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
-                CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
-                CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
-                ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
-                NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments, createdBy, updatedBy, createdAt, updatedAt 
+                result: 'Invalid Token'
+            });
+        } else {
+            const {
+                start_month, end_month, start_year, end_year, block, previous_month_cases_recieved,
+                current_month_cases_recieved, total_cases_recieved, previous_month_cases_resolved,
+                current_month_cases_resolved, total_cases_resolved, cases_with_fir, medical_assistance,
+                shelter_home_assistance, dir_assistance, other, promotional_activities_number,
+                number_of_meetings_of_district_mahila_samadhan_samiti, comments, created_by, updated_by, created_at, updated_at
             } = req.body;
-        
+
             // Check if all required fields are provided
-            if (!StartMonth || !EndMonth || !StartYear || !EndYear || !Block || !PreviousMonthCasesRecieved || 
-                !CurrentMonthCasesRecieved || !TotalCasesRecieved || !PreviousMonthCasesResolved || 
-                !CurrentMonthCasesResolved || !TotalCasesResolved || !CasesWithFir || !MedicalAssistance || 
-                !ShelterHomeAssistance || !DIRAssistance || !Other || !PromotionalActivitiesNumber || 
-                !NumberOfMeetingsOfDistrictMahilaSamadhanSamiti || !Comments || !createdBy || !updatedBy || 
-                !createdAt || !updatedAt) {
+            if (!start_month || !end_month || !start_year || !end_year || !block || !previous_month_cases_recieved ||
+                !current_month_cases_recieved || !total_cases_recieved || !previous_month_cases_resolved ||
+                !current_month_cases_resolved || !total_cases_resolved || !cases_with_fir || !medical_assistance ||
+                !shelter_home_assistance || !dir_assistance || !other || !promotional_activities_number ||
+                !number_of_meetings_of_district_mahila_samadhan_samiti || !comments || !created_by || !updated_by ||
+                !created_at || !updated_at) {
                 return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
             }
-        
-            const sql = `
-    INSERT INTO MonthlyProgressReport 
-    (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
-    CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
-    CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
-    ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
-    NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comment, createdBy, createdAt, updatedAt, 
-    updatedBy) 
-    VALUES 
-    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-`;
 
-db.query(sql, [
-    StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
-    CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
-    CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
-    ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
-    NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments, createdBy, createdAt, updatedAt, 
-    updatedBy
-], (err, data) => {
-    if (err) {
-        console.error("Database error:", err);            
-        return res.status(500).json(responseHandler("Failure", 500, "Database error"));
-    }
-    return res.status(200).json(responseHandler("Success", 200, "MPR added successfully", { blockId: data.insertId }));
-});
-           
+            const sql = `
+                INSERT INTO monthly_progress_report 
+                (start_month, end_month, start_year, end_year, block, previous_month_cases_recieved, 
+                current_month_cases_recieved, total_cases_recieved, previous_month_cases_resolved, 
+                current_month_cases_resolved, total_cases_resolved, cases_with_fir, medical_assistance, 
+                shelter_home_assistance, dir_assistance, other, promotional_activities_number, 
+                number_of_meetings_of_district_mahila_samadhan_samiti, comment, created_by, created_at, updated_at, 
+                updated_by) 
+                VALUES 
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `;
+
+            db.query(sql, [
+                start_month, end_month, start_year, end_year, block, previous_month_cases_recieved,
+                current_month_cases_recieved, total_cases_recieved, previous_month_cases_resolved,
+                current_month_cases_resolved, total_cases_resolved, cases_with_fir, medical_assistance,
+                shelter_home_assistance, dir_assistance, other, promotional_activities_number,
+                number_of_meetings_of_district_mahila_samadhan_samiti, comments, created_by, created_at, updated_at,
+                updated_by
+            ], (err, data) => {
+                if (err) {
+                    console.error("Database error:", err);
+                    return res.status(500).json(responseHandler("Failure", 500, "Database error"));
+                }
+                return res.status(200).json(responseHandler("Success", 200, "MPR added successfully", { block_id: data.insertId }));
+            });
         }
-    })
+    });
 });
+
 
 
 
@@ -393,28 +392,28 @@ app.get('/getUserToken', (req, res) => {
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
 
-        if (data.length === 0) {            
+        if (data.length === 0) {
             return res.status(404).json(responseHandler("Not Found", 404, "User not found"));
         }
 
-        jwt.sign({userId},UserSecretKey,{expiresIn:'432000s'},(err,token)=>{
-            if(err){
+        jwt.sign({ userId }, UserSecretKey, { expiresIn: '432000s' }, (err, token) => {
+            if (err) {
                 res.json(err)
             }
-            else{
-                res.status(200).json(responseHandler("Success", 200, "Token Generated Succesfully", {token}));
+            else {
+                res.status(200).json(responseHandler("Success", 200, "Token Generated Succesfully", { token }));
             }
         })
     });
 });
 
-function VerifyUserToken(req,res,next ){
+function VerifyUserToken(req, res, next) {
     const token = req.headers['authorization']
-    if(typeof token !== 'undefined'){
+    if (typeof token !== 'undefined') {
         req.token = token
         next()
     }
-    else{
+    else {
         res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
     }
 }
