@@ -249,7 +249,7 @@ app.delete('/scheme/:id', (req, res) => {
 //Blocks API
 
 app.get('/blocks', VerifyUserToken, (req, res) => {
-    jwt.verify(req.token, UserSecretKey, (err, authData)=>{s
+    jwt.verify(req.token, UserSecretKey, (err, authData)=>{
         if (err){
             res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         }
