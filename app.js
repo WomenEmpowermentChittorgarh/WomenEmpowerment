@@ -350,13 +350,13 @@ app.post('/mpr', VerifyUserToken, (req, res) => {
             }
 
             const sql = `
-                INSERT INTO monthly_progress_report 
-                (start_month, end_month, start_year, end_year, block, previous_month_cases_recieved, 
-                current_month_cases_recieved, total_cases_recieved, previous_month_cases_resolved, 
-                current_month_cases_resolved, total_cases_resolved, cases_with_fir, medical_assistance, 
-                shelter_home_assistance, dir_assistance, other, promotional_activities_number, 
-                number_of_meetings_of_district_mahila_samadhan_samiti, comment, created_by, created_at, updated_at, 
-                updated_by) 
+                INSERT INTO MonthlyProgressReport 
+                (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
+                CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
+                CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
+                ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
+                NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comment, createdBy, createdAt, updatedAt, 
+                updatedBy) 
                 VALUES 
                 (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
