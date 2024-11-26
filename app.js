@@ -324,23 +324,65 @@ app.get('/MPR', (req, res) => {
     });
 });
 
-app.post('/MPR', (req, res) => {
-    const { StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments } = req.body;
-
-    // Check if all required fields are provided
-    if (!StartMonth || !EndMonth || !StartYear || !EndYear || !Block || !PreviousMonthCasesRecieved || !CurrentMonthCasesRecieved || !TotalCasesRecieved || !PreviousMonthCasesResolved || !CurrentMonthCasesResolved || !TotalCasesResolved || !CasesWithFir || !MedicalAssistance || !ShelterHomeAssistance || !DIRAssistance || !Other || !PromotionalActivitiesNumber || !NumberOfMeetingsOfDistrictMahilaSamadhanSamiti || !Comments) {
-        return res.status(500).json(responseHandler("Bad Request", 500, "All fields are required"));
-    }
-    const sql = 'INSERT INTO MonthlyProgressReport (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comment) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
-    db.query(sql, [ StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments ], (err, data) => {
-        if (err) {
-            console.error("Database error:", err);            
-            return res.status(500).json(responseHandler("Failure", 500, "Database error"));
+app.post('/MPR', VerifyUserToken, (req, res) => {
+    jwt.verify(req.token, UserSecretKey, (err, authData)=>{
+        if (err){
+            res.status(403).json({
+                result:'Invalid Token'
+            })
         }
-        return res.status(200).json(responseHandler("Success", 200, "MPR added successfully", { blockId: data.insertId }));
-        // return res.status(201).json({ message: "MPR added successfully", blockId: data.insertId });
-    });  
+        else{
+            const { 
+                StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
+                CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
+                CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
+                ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
+                NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments, createdBy, updatedBy, createdAt, updatedAt 
+            } = req.body;
+        
+            const createdByName = ''
+            const updatedByName = ''
+        
+            // Check if all required fields are provided
+            if (!StartMonth || !EndMonth || !StartYear || !EndYear || !Block || !PreviousMonthCasesRecieved || 
+                !CurrentMonthCasesRecieved || !TotalCasesRecieved || !PreviousMonthCasesResolved || 
+                !CurrentMonthCasesResolved || !TotalCasesResolved || !CasesWithFir || !MedicalAssistance || 
+                !ShelterHomeAssistance || !DIRAssistance || !Other || !PromotionalActivitiesNumber || 
+                !NumberOfMeetingsOfDistrictMahilaSamadhanSamiti || !Comments || !createdBy || !updatedBy || 
+                !createdAt || !updatedAt) {
+                return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
+            }
+        
+            const sql = `
+                INSERT INTO MonthlyProgressReport 
+                (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
+                CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
+                CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
+                ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
+                NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comment, createdBy, createdAt, updatedAt, 
+                updatedBy, createdByName, updatedByName) 
+                VALUES 
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `;
+        
+            db.query(sql, [
+                StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
+                CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
+                CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
+                ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
+                NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments, createdBy, createdAt, updatedAt, 
+                updatedBy, createdByName, updatedByName
+            ], (err, data) => {
+                if (err) {
+                    console.error("Database error:", err);            
+                    return res.status(500).json(responseHandler("Failure", 500, "Database error"));
+                }
+                return res.status(200).json(responseHandler("Success", 200, "MPR added successfully", { blockId: data.insertId }));
+            });
+        }
+    })
 });
+
 
 
 //Token API
