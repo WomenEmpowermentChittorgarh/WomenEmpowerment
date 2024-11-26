@@ -285,7 +285,7 @@ app.post('/block', VerifyUserToken,  (req, res) => {
             db.query(sql, [Name], (err, data) => {
                 if (err) {
                     console.error("Database error:", err);
-                    return res.status(500).json(responseHandler("Failure", 500, "Database error"));
+                    return res.status(500).json(responseHandler("Failure", 500, "Block Already Exists"));
                 }
                 return res.status(200).json(responseHandler("Success", 200, "Block added successfully"));
                 // return res.status(201).json({ message: "Block added successfully", blockId: data.insertId });
