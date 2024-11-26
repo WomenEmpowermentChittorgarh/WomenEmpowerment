@@ -340,9 +340,6 @@ app.post('/MPR', VerifyUserToken, (req, res) => {
                 NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments, createdBy, updatedBy, createdAt, updatedAt 
             } = req.body;
         
-            const createdByName = ''
-            const updatedByName = ''
-        
             // Check if all required fields are provided
             if (!StartMonth || !EndMonth || !StartYear || !EndYear || !Block || !PreviousMonthCasesRecieved || 
                 !CurrentMonthCasesRecieved || !TotalCasesRecieved || !PreviousMonthCasesResolved || 
@@ -371,7 +368,7 @@ app.post('/MPR', VerifyUserToken, (req, res) => {
                 CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
                 ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
                 NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments, createdBy, createdAt, updatedAt, 
-                updatedBy, createdByName, updatedByName
+                updatedBy, '', ''
             ], (err, data) => {
                 if (err) {
                     console.error("Database error:", err);            
