@@ -249,11 +249,9 @@ app.delete('/scheme/:id', (req, res) => {
 //Blocks API
 
 app.get('/blocks', VerifyUserToken, (req, res) => {
-    jwt.verify(req.token, UserSecretKey, (err, authData)=>{
+    jwt.verify(req.token, UserSecretKey, (err, authData)=>{s
         if (err){
-            res.status(403).json({
-                result:'Invalid Token'
-            })
+            res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         }
         else{
             const sql = 'SELECT * FROM blocks ORDER BY name';
@@ -371,10 +369,8 @@ app.get('/getUserToken', (req, res) => {
 });
 
 function VerifyUserToken(req,res,next ){
-    const bearerHeader = req.headers['userauthtoken']
-    if(typeof bearerHeader !== 'undefined'){
-        const bearer = bearerHeader.split(' ')
-        const token = bearer[1]
+    const token = req.headers['authorization']
+    if(typeof token !== 'undefined'){
         req.token = token
         next()
     }
