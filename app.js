@@ -325,7 +325,7 @@ app.get('/MPR', (req, res) => {
 });
 
 app.post('/mpr', VerifyUserToken, (req, res) => {
-    jwt.verify(req.token, user_secret_key, (err, auth_data) => {
+    jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
             res.status(403).json({
                 result: 'Invalid Token'
