@@ -368,7 +368,7 @@ app.post('/MPR', VerifyUserToken, (req, res) => {
                 CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
                 ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
                 NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments, createdBy, createdAt, updatedAt, 
-                updatedBy, '', ''
+                updatedBy, 'null', 'null'
             ], (err, data) => {
                 if (err) {
                     console.error("Database error:", err);            
