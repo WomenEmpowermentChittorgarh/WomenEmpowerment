@@ -351,31 +351,32 @@ app.post('/MPR', VerifyUserToken, (req, res) => {
             }
         
             const sql = `
-                INSERT INTO MonthlyProgressReport 
-                (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
-                CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
-                CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
-                ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
-                NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comment, createdBy, createdAt, updatedAt, 
-                updatedBy, createdByName, updatedByName) 
-                VALUES 
-                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `;
-        
-            db.query(sql, [
-                StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
-                CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
-                CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
-                ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
-                NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments, createdBy, createdAt, updatedAt, 
-                updatedBy, null, null // Pass null without quotes for createdByName and updatedByName
-            ], (err, data) => {
-                if (err) {
-                    console.error("Database error:", err);
-                    return res.status(500).json(responseHandler("Failure", 500, "Database error"));
-                }
-                return res.status(200).json(responseHandler("Success", 200, "MPR added successfully", { blockId: data.insertId }));
-            });            
+    INSERT INTO MonthlyProgressReport 
+    (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
+    CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
+    CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
+    ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
+    NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comment, createdBy, createdAt, updatedAt, 
+    updatedBy) 
+    VALUES 
+    (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
+
+db.query(sql, [
+    StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
+    CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
+    CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
+    ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
+    NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comments, createdBy, createdAt, updatedAt, 
+    updatedBy
+], (err, data) => {
+    if (err) {
+        console.error("Database error:", err);            
+        return res.status(500).json(responseHandler("Failure", 500, "Database error"));
+    }
+    return res.status(200).json(responseHandler("Success", 200, "MPR added successfully", { blockId: data.insertId }));
+});
+           
         }
     })
 });
