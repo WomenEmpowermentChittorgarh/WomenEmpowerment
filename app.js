@@ -392,7 +392,7 @@ app.put('/MPR/:id', VerifyUserToken, (req, res) => {
                 current_month_cases_recieved, total_cases_recieved, previous_month_cases_resolved,
                 current_month_cases_resolved, total_cases_resolved, cases_with_fir, medical_assistance,
                 shelter_home_assistance, dir_assistance, other, promotional_activities_number,
-                number_of_meetings_of_district_mahila_samadhan_samiti, comments, created_by, updated_by, created_at, updated_at
+                number_of_meetings_of_district_mahila_samadhan_samiti, comments, updated_by, updated_at
             } = req.body;
 
             // Check if all required fields are provided
@@ -400,8 +400,7 @@ app.put('/MPR/:id', VerifyUserToken, (req, res) => {
                 !current_month_cases_recieved || !total_cases_recieved || !previous_month_cases_resolved ||
                 !current_month_cases_resolved || !total_cases_resolved || !cases_with_fir || !medical_assistance ||
                 !shelter_home_assistance || !dir_assistance || !other || !promotional_activities_number ||
-                !number_of_meetings_of_district_mahila_samadhan_samiti || !comments || !created_by || !updated_by ||
-                !created_at || !updated_at) {
+                !number_of_meetings_of_district_mahila_samadhan_samiti || !comments || !updated_by || !updated_at) {
                 return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
             }
 
@@ -438,8 +437,7 @@ app.put('/MPR/:id', VerifyUserToken, (req, res) => {
                 current_month_cases_recieved, total_cases_recieved, previous_month_cases_resolved,
                 current_month_cases_resolved, total_cases_resolved, cases_with_fir, medical_assistance,
                 shelter_home_assistance, dir_assistance, other, promotional_activities_number,
-                number_of_meetings_of_district_mahila_samadhan_samiti, comments, created_by, created_at, updated_at,
-                updated_by,mpr_id // Ensure this is the correct ID value (integer or string)
+                number_of_meetings_of_district_mahila_samadhan_samiti, comments, updated_by ,updated_at,mpr_id // Ensure this is the correct ID value (integer or string)
             ], (err, data) => {
                 if (err) {
                     console.error("Database error:", err);            
