@@ -348,7 +348,7 @@ app.post('/MPR', (req, res) => {
 
 //Token API
 app.get('/getUserToken', (req, res) => {
-    const { userId } = req.body;
+    const { userId } = req.query;
     const sql = 'SELECT * FROM users WHERE id = ?';
     db.query(sql, [userId], (err, data) => {
         if (err) {
@@ -365,9 +365,7 @@ app.get('/getUserToken', (req, res) => {
                 res.json(err)
             }
             else{
-                res.json({
-                    token
-                })
+                res.json(responseHandler("Succcess", 200, "Token Fetched Successfully", token))
             }
         })
     });
