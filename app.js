@@ -379,6 +379,83 @@ app.post('/mpr', VerifyUserToken, (req, res) => {
     });
 });
 
+app.put('/MPR/:id', VerifyUserToken, (req, res) => {
+    jwt.verify(req.token, UserSecretKey, (err, authData) => {
+        if (err) {
+            return res.status(403).json({
+                result: 'Invalid Token'
+            });
+        } else {
+            // Extract the MPR ID from the URL parameter and the data from the request body
+            const mpr_id = req.params.id;
+            const { 
+                start_month, end_month, start_year, end_year, block, previous_month_cases_recieved,
+                current_month_cases_recieved, total_cases_recieved, previous_month_cases_resolved,
+                current_month_cases_resolved, total_cases_resolved, cases_with_fir, medical_assistance,
+                shelter_home_assistance, dir_assistance, other, promotional_activities_number,
+                number_of_meetings_of_district_mahila_samadhan_samiti, comments, created_by, updated_by, created_at, updated_at
+            } = req.body;
+
+            // Check if all required fields are provided
+            if (!start_month || !end_month || !start_year || !end_year || !block || !previous_month_cases_recieved ||
+                !current_month_cases_recieved || !total_cases_recieved || !previous_month_cases_resolved ||
+                !current_month_cases_resolved || !total_cases_resolved || !cases_with_fir || !medical_assistance ||
+                !shelter_home_assistance || !dir_assistance || !other || !promotional_activities_number ||
+                !number_of_meetings_of_district_mahila_samadhan_samiti || !comments || !created_by || !updated_by ||
+                !created_at || !updated_at) {
+                return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
+            }
+
+            const sql = `
+                UPDATE MonthlyProgressReport 
+                SET 
+                    startMonth = ?, 
+                    endMonth = ?, 
+                    startYear = ?, 
+                    endYear = ?, 
+                    block = ?, 
+                    previousMonthCasesRecieved = ?, 
+                    currentMonthCasesRecieved = ?, 
+                    totalCasesRecieved = ?, 
+                    previousMonthCasesResolved = ?, 
+                    currentMonthCasesResolved = ?, 
+                    totalCasesResolved = ?, 
+                    casesWithFir = ?, 
+                    medicalAssistance = ?, 
+                    shelterHomeAssistance = ?, 
+                    dirAssistance = ?, 
+                    other = ?, 
+                    promotionalActivitiesNumber = ?, 
+                    numberOfMeetingsOfDistrictMahilaSamadhanSamiti = ?, 
+                    comments = ?, 
+                    updatedBy = ?, 
+                    updatedAt = ? 
+                WHERE id = ?;
+            `;
+
+            // Perform the update query
+            db.query(sql, [
+                start_month, end_month, start_year, end_year, block, previous_month_cases_recieved,
+                current_month_cases_recieved, total_cases_recieved, previous_month_cases_resolved,
+                current_month_cases_resolved, total_cases_resolved, cases_with_fir, medical_assistance,
+                shelter_home_assistance, dir_assistance, other, promotional_activities_number,
+                number_of_meetings_of_district_mahila_samadhan_samiti, comments, created_by, created_at, updated_at,
+                updated_by,mpr_id
+            ], (err, data) => {
+                if (err) {
+                    console.error("Database error:", err);            
+                    return res.status(500).json(responseHandler("Failure", 500, "Database error"));
+                }
+                if (data.affectedRows === 0) {
+                    return res.status(404).json(responseHandler("Not Found", 404, "MPR not found"));
+                }
+                return res.status(200).json(responseHandler("Success", 200, "MPR updated successfully"));
+            });
+        }
+    });
+});
+
+
 
 
 
