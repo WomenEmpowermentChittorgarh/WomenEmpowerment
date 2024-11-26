@@ -308,7 +308,7 @@ app.get('/getallMPR', (req, res) => {
     });
 });
 
-app.get('/MPR', (req, res) => {
+app.get('/getmprbymonthyear', (req, res) => {
     const { StartMonth, EndMonth, StartYear, EndYear } = req.body;
     if (!StartMonth || !EndMonth || !StartYear || !EndYear) {
         return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
@@ -322,6 +322,30 @@ app.get('/MPR', (req, res) => {
         }
         return res.status(200).json(responseHandler("Success", 200, "MPR Fetched Successfully", { data }));
     });
+});
+
+app.get('/getmpr/:id', (req, res) => {
+    jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
+        if (err) {
+            res.status(403).json({
+                result: 'Invalid Token'
+            });
+        } else {
+            const user_id = req.params.id;  // Assuming this is an integer ID
+            if (!user_id) {
+                return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
+            }
+            logger.log("debug", "Hello, World!"); //debug level as first param
+            const sql = 'SELECT * FROM `MonthlyProgressReport` WHERE createdBy=?';
+            db.query(sql, [user_id], (err, data) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+                }
+                return res.status(200).json(responseHandler("Success", 200, "MPR Fetched Successfully", { data }));
+            });
+        }
+    })
 });
 
 app.post('/mpr', VerifyUserToken, (req, res) => {
