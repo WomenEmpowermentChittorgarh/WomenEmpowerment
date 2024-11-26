@@ -266,7 +266,7 @@ app.get('/blocks', VerifyUserToken, (req, res) => {
     })
 });
 
-app.post('/block', (req, res) => {
+app.post('/block', VerifyUserToken,  (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, authData)=>{
         if (err){
             res.status(403).json({
@@ -354,7 +354,7 @@ app.get('/getUserToken', (req, res) => {
         }
 
         if (data.length === 0) {            
-            return res.status(404).json(responseHandler("not found", 404, "User not found"));
+            return res.status(404).json(responseHandler("Not Found", 404, "User not found"));
         }
 
         jwt.sign({userId},UserSecretKey,{expiresIn:'432000s'},(err,token)=>{
