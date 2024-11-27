@@ -772,10 +772,9 @@ app.get('/sathin_mpr', VerifyUserToken, (req, res) => {
 
         // Validate if the required query parameters are provided
         if (!StartMonth || !EndMonth || !StartYear || !EndYear) {
-            return res.status(400).json({
-                result: 'Failure',
-                message: 'Missing required query parameters (StartMonth, EndMonth, StartYear, EndYear)'
-            });
+            return res
+                        .status(400)
+                        .json(responseHandler("Failure", 400, "Missing required query parameters (StartMonth, EndMonth, StartYear, EndYear", null));
         }
 
         // SQL query to fetch data based on the provided parameters
@@ -792,10 +791,9 @@ app.get('/sathin_mpr', VerifyUserToken, (req, res) => {
         db.query(selectSql, selectValues, (err, results) => {
             if (err) {
                 console.error('Error fetching data:', err);
-                return res.status(500).json({
-                    result: 'Failure',
-                    message: 'Database error during fetch'
-                });
+                return res
+                        .status(500)
+                        .json(responseHandler("Failure", 500, "Database error during fetch", null));
             }
 
             if (results.length === 0) {
@@ -805,10 +803,7 @@ app.get('/sathin_mpr', VerifyUserToken, (req, res) => {
             }
 
             // Successfully fetched data
-            res.status(200).json({
-                result: 'Success',
-                data: results
-            });
+            res.status(200).json(responseHandler("Success", 200, "Data Fetched successfully",{data: results}));
         });
     });
 });
