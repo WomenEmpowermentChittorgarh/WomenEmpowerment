@@ -660,7 +660,7 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 console.error('Error inserting data:', err);
                 res.status(500).json(responseHandler("Failure", 400, "Database error", null));
               } else {
-                res.status(200).json(responseHandler("Success", 200, "Data inserted successfully", { data: result }));
+                res.status(200).json(responseHandler("Success", 200, "Data inserted successfully"));
                 // res.status(201).json({ success: true, message: 'Data inserted successfully', data: result });
               }
             });
