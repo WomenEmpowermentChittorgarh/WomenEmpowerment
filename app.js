@@ -623,25 +623,7 @@ app.get('/sathin_mpr', VerifyUserToken, (req, res) => {
         }
 
         const sqlQuery = `
-            SELECT 
-                id, 
-                total_approved_sathin, 
-                total_working_sathin, 
-                general, 
-                scsp, 
-                tsp, 
-                vacant_post, 
-                monthly_payment, 
-                newly_selected_sathin, 
-                newly_selected_sathin_basic_training, 
-                newly_selected_sathin_no_training, 
-                specific_description, 
-                createdBy, 
-                createdAt, 
-                updatedBy, 
-                updatedAt
-            FROM 
-                sathin_mpr
+            SELECT * FROM sathin_mpr
         `;
 
         db.query(sqlQuery, (err, results) => {
