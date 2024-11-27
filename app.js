@@ -617,29 +617,81 @@ app.post('/verify-otp', (req, res) => {
 app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
-            res.status(403).json({
+            return res.status(403).json({
                 result: 'Invalid Token'
             });
+        }
+
+        const {
+            formid, // Optional field to determine update or insert
+            total_approved_sathin,
+            total_working_sathin,
+            general,
+            scsp,
+            tsp,
+            vacant_post,
+            monthly_payment,
+            newly_selected_sathin,
+            newly_selected_sathin_basic_training,
+            newly_selected_sathin_no_training,
+            specific_description,
+            createdBy,
+            createdAt,
+            updatedAt,
+            updatedBy,
+        } = req.body;
+
+        if (formid) {
+            // Update logic if formid is provided
+            const updateSql = `
+              UPDATE sathin_mpr
+              SET 
+                total_approved_sathin = ?, 
+                total_working_sathin = ?, 
+                general = ?, 
+                scsp = ?, 
+                tsp = ?, 
+                vacant_post = ?, 
+                monthly_payment = ?, 
+                newly_selected_sathin = ?, 
+                newly_selected_sathin_basic_training = ?, 
+                newly_selected_sathin_no_training = ?, 
+                specific_description = ?, 
+                updatedAt = ?, 
+                updatedBy = ?
+              WHERE id = ?
+            `;
+
+            const updateValues = [
+                total_approved_sathin,
+                total_working_sathin,
+                general,
+                scsp,
+                tsp,
+                vacant_post,
+                monthly_payment,
+                newly_selected_sathin,
+                newly_selected_sathin_basic_training,
+                newly_selected_sathin_no_training,
+                specific_description,
+                updatedAt,
+                updatedBy,
+                formid
+            ];
+
+            db.query(updateSql, updateValues, (err, result) => {
+                if (err) {
+                    console.error('Error updating data:', err);
+                    return res
+                        .status(500)
+                        .json(responseHandler("Failure", 400, "Database error during update", null));
+                }
+
+                res.status(200).json(responseHandler("Success", 200, "Data updated successfully"));
+            });
         } else {
-            const {
-              total_approved_sathin,
-              total_working_sathin,
-              general,
-              scsp,
-              tsp,
-              vacant_post,
-              monthly_payment,
-              newly_selected_sathin,
-              newly_selected_sathin_basic_training,
-              newly_selected_sathin_no_training,
-              specific_description,
-              createdBy,
-              createdAt,
-              updatedAt,
-              updatedBy,
-            } = req.body;
-          
-            const sql = `
+            // Insert logic if formid is not provided
+            const insertSql = `
               INSERT INTO sathin_mpr (
                 total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post, 
                 monthly_payment, newly_selected_sathin, newly_selected_sathin_basic_training, 
@@ -647,26 +699,39 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 updatedAt, updatedBy
               ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
-          
-            const values = [
-              total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post,
-              monthly_payment, newly_selected_sathin, newly_selected_sathin_basic_training,
-              newly_selected_sathin_no_training, specific_description, createdBy, createdAt,
-              updatedAt, updatedBy
+
+            const insertValues = [
+                total_approved_sathin,
+                total_working_sathin,
+                general,
+                scsp,
+                tsp,
+                vacant_post,
+                monthly_payment,
+                newly_selected_sathin,
+                newly_selected_sathin_basic_training,
+                newly_selected_sathin_no_training,
+                specific_description,
+                createdBy,
+                createdAt,
+                updatedAt,
+                updatedBy
             ];
-          
-            db.query(sql, values, (err, result) => {
-              if (err) {
-                console.error('Error inserting data:', err);
-                res.status(500).json(responseHandler("Failure", 400, "Database error", null));
-              } else {
+
+            db.query(insertSql, insertValues, (err, result) => {
+                if (err) {
+                    console.error('Error inserting data:', err);
+                    return res
+                        .status(500)
+                        .json(responseHandler("Failure", 400, "Database error during insert", null));
+                }
+
                 res.status(200).json(responseHandler("Success", 200, "Data inserted successfully"));
-                // res.status(201).json({ success: true, message: 'Data inserted successfully', data: result });
-              }
             });
         }
-    })
-  });
+    });
+});
+
 
 
 const PORT = process.env.PORT || 8081;
