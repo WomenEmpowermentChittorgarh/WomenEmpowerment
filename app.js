@@ -665,10 +665,11 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
             createdAt,
             updatedAt,
             updatedBy,
+            StartMonth, // New field
+            EndMonth,   // New field
+            StartYear,  // New field
+            EndYear     // New field
         } = req.body;
-
-        // console.log(formid);
-        
 
         if (formid) {
             // Update logic if formid is provided
@@ -687,7 +688,11 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 newly_selected_sathin_no_training = ?, 
                 specific_description = ?, 
                 updatedAt = ?, 
-                updatedBy = ?
+                updatedBy = ?, 
+                StartMonth = ?, 
+                EndMonth = ?, 
+                StartYear = ?, 
+                EndYear = ?
               WHERE id = ?
             `;
 
@@ -705,6 +710,10 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 specific_description,
                 updatedAt,
                 updatedBy,
+                StartMonth, 
+                EndMonth,   
+                StartYear,  
+                EndYear,    
                 formid
             ];
 
@@ -725,8 +734,8 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post, 
                 monthly_payment, newly_selected_sathin, newly_selected_sathin_basic_training, 
                 newly_selected_sathin_no_training, specific_description, createdBy, createdAt, 
-                updatedAt, updatedBy
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                updatedAt, updatedBy, StartMonth, EndMonth, StartYear, EndYear
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             const insertValues = [
@@ -744,7 +753,11 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 createdBy,
                 createdAt,
                 updatedAt,
-                updatedBy
+                updatedBy,
+                StartMonth, 
+                EndMonth,   
+                StartYear,  
+                EndYear     
             ];
 
             db.query(insertSql, insertValues, (err, result) => {
@@ -760,6 +773,7 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
         }
     });
 });
+
 
 
 
