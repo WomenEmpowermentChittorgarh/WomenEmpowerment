@@ -808,6 +808,52 @@ app.get('/sathin_mpr', VerifyUserToken, (req, res) => {
     });
 });
 
+app.post('/sathin_mpr/fetchByCreatedBy', VerifyUserToken, (req, res) => {
+    jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
+        if (err) {
+            return res
+                        .status(403)
+                        .json(responseHandler("Forbidden", 403, "Invalid Token", null));
+        }
+
+        const { createdBy } = req.body;  // Get createdBy from the request body
+
+        // Validate if createdBy is provided
+        if (!createdBy) {
+            return res
+                        .status(400)
+                        .json(responseHandler("Failure", 400, "Missing required parameter: createdBy", null));
+        }
+
+        // SQL query to fetch data based on the createdById
+        const selectSql = `
+            SELECT * FROM sathin_mpr
+            WHERE createdBy = ?
+        `;
+
+        const selectValues = [createdBy];
+
+        db.query(selectSql, selectValues, (err, results) => {
+            if (err) {
+                console.error('Error fetching data:', err);
+                return res
+                        .status(500)
+                        .json(responseHandler("Failure", 500, "Database error during fetch", null));
+            }
+
+            if (results.length === 0) {
+                return res
+                        .status(404)
+                        .json(responseHandler("Not Found", 404, "No records found for the provided createdBy", null));
+            }
+
+            // Successfully fetched data
+            res.status(200).json(responseHandler("Success", 200, "Data Fetched successfully",{data: results}));
+        });
+    });
+});
+
+
 
 
 
