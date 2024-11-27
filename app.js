@@ -614,49 +614,57 @@ app.post('/verify-otp', (req, res) => {
 });
 
 //sathin_mpr API
-app.post('/sathin_mpr', (req, res) => {
-    const {
-      total_approved_sathin,
-      total_working_sathin,
-      general,
-      scsp,
-      tsp,
-      vacant_post,
-      monthly_payment,
-      newly_selected_sathin,
-      newly_selected_sathin_basic_training,
-      newly_selected_sathin_no_training,
-      specific_description,
-      createdBy,
-      createdAt,
-      updatedAt,
-      updatedBy,
-    } = req.body;
-  
-    const sql = `
-      INSERT INTO sathin_mpr (
-        total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post, 
-        monthly_payment, newly_selected_sathin, newly_selected_sathin_basic_training, 
-        newly_selected_sathin_no_training, specific_description, createdBy, createdAt, 
-        updatedAt, updatedBy
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-  
-    const values = [
-      total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post,
-      monthly_payment, newly_selected_sathin, newly_selected_sathin_basic_training,
-      newly_selected_sathin_no_training, specific_description, createdBy, createdAt,
-      updatedAt, updatedBy
-    ];
-  
-    db.query(sql, values, (err, result) => {
-      if (err) {
-        console.error('Error inserting data:', err);
-        res.status(500).json({ success: false, message: 'Database error', error: err });
-      } else {
-        res.status(201).json({ success: true, message: 'Data inserted successfully', data: result });
-      }
-    });
+app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
+    jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
+        if (err) {
+            res.status(403).json({
+                result: 'Invalid Token'
+            });
+        } else {
+            const {
+              total_approved_sathin,
+              total_working_sathin,
+              general,
+              scsp,
+              tsp,
+              vacant_post,
+              monthly_payment,
+              newly_selected_sathin,
+              newly_selected_sathin_basic_training,
+              newly_selected_sathin_no_training,
+              specific_description,
+              createdBy,
+              createdAt,
+              updatedAt,
+              updatedBy,
+            } = req.body;
+          
+            const sql = `
+              INSERT INTO sathin_mpr (
+                total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post, 
+                monthly_payment, newly_selected_sathin, newly_selected_sathin_basic_training, 
+                newly_selected_sathin_no_training, specific_description, createdBy, createdAt, 
+                updatedAt, updatedBy
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            `;
+          
+            const values = [
+              total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post,
+              monthly_payment, newly_selected_sathin, newly_selected_sathin_basic_training,
+              newly_selected_sathin_no_training, specific_description, createdBy, createdAt,
+              updatedAt, updatedBy
+            ];
+          
+            db.query(sql, values, (err, result) => {
+              if (err) {
+                console.error('Error inserting data:', err);
+                res.status(500).json({ success: false, message: 'Database error', error: err });
+              } else {
+                res.status(201).json({ success: true, message: 'Data inserted successfully', data: result });
+              }
+            });
+        }
+    })
   });
 
 
