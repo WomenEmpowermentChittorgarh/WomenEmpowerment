@@ -799,10 +799,9 @@ app.get('/sathin_mpr', VerifyUserToken, (req, res) => {
             }
 
             if (results.length === 0) {
-                return res.status(404).json({
-                    result: 'Failure',
-                    message: 'No records found for the provided parameters'
-                });
+                return res
+                        .status(404)
+                        .json(responseHandler("Not Found", 404, "No records found for the provided parameters", null));
             }
 
             // Successfully fetched data
