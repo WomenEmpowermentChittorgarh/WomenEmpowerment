@@ -614,6 +614,50 @@ app.post('/verify-otp', (req, res) => {
 });
 
 //sathin_mpr API
+app.get('/sathin_mpr', VerifyUserToken, (req, res) => {
+    jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
+        if (err) {
+            return res.status(403).json({
+                result: 'Invalid Token'
+            });
+        }
+
+        const sqlQuery = `
+            SELECT 
+                id, 
+                total_approved_sathin, 
+                total_working_sathin, 
+                general, 
+                scsp, 
+                tsp, 
+                vacant_post, 
+                monthly_payment, 
+                newly_selected_sathin, 
+                newly_selected_sathin_basic_training, 
+                newly_selected_sathin_no_training, 
+                specific_description, 
+                createdBy, 
+                createdAt, 
+                updatedBy, 
+                updatedAt
+            FROM 
+                sathin_mpr
+        `;
+
+        db.query(sqlQuery, (err, results) => {
+            if (err) {
+                console.error('Error fetching data:', err);
+                return res
+                    .status(500)
+                    .json(responseHandler("Failure", 500, "Database error during fetch", null));
+            }
+
+            res.status(200).json(responseHandler("Success", 200, "Data fetched successfully", results));
+        });
+    });
+});
+
+
 app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
