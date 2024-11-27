@@ -269,9 +269,7 @@ app.get('/blocks', VerifyUserToken, (req, res) => {
 app.post('/block', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, authData) => {
         if (err) {
-            res.status(403).json({
-                result: 'Invalid Token'
-            })
+            res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         }
         else {
             const { Name } = req.body;
@@ -327,9 +325,7 @@ app.get('/getmprbymonthyear', (req, res) => {
 app.get('/getmpr/:id', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
-            res.status(403).json({
-                result: 'Invalid Token'
-            });
+            res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         } else {
             const user_id = req.params.id;  // Assuming this is an integer ID
             if (!user_id) {
@@ -351,9 +347,7 @@ app.get('/getmpr/:id', VerifyUserToken, (req, res) => {
 app.post('/mpr', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
-            res.status(403).json({
-                result: 'Invalid Token'
-            });
+            res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         } else {
             const {
                 start_month, end_month, start_year, end_year, block, previous_month_cases_recieved,
@@ -406,9 +400,7 @@ app.post('/mpr', VerifyUserToken, (req, res) => {
 app.put('/MPR/:id', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, authData) => {
         if (err) {
-            return res.status(403).json({
-                result: 'Invalid Token'
-            });
+            res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         } else {
             const mpr_id = req.params.id;  // Assuming this is an integer ID
             const { 
@@ -614,12 +606,10 @@ app.post('/verify-otp', (req, res) => {
 });
 
 //sathin_mpr API
-app.get('/sathin_mpr', VerifyUserToken, (req, res) => {
+app.get('/get_all_sathin_mpr', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
-            return res.status(403).json({
-                result: 'Invalid Token'
-            });
+            res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         }
 
         const sqlQuery = `
@@ -643,9 +633,7 @@ app.get('/sathin_mpr', VerifyUserToken, (req, res) => {
 app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
-            return res.status(403).json({
-                result: 'Invalid Token'
-            });
+            res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         }
 
         const {
@@ -773,6 +761,59 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
         }
     });
 });
+
+app.get('/sathin_mpr', VerifyUserToken, (req, res) => {
+    jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
+        if (err) {
+            res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
+        }
+
+        const { StartMonth, EndMonth, StartYear, EndYear } = req.query;
+
+        // Validate if the required query parameters are provided
+        if (!StartMonth || !EndMonth || !StartYear || !EndYear) {
+            return res.status(400).json({
+                result: 'Failure',
+                message: 'Missing required query parameters (StartMonth, EndMonth, StartYear, EndYear)'
+            });
+        }
+
+        // SQL query to fetch data based on the provided parameters
+        const selectSql = `
+            SELECT * FROM sathin_mpr
+            WHERE StartMonth = ? 
+            AND EndMonth = ? 
+            AND StartYear = ? 
+            AND EndYear = ?
+        `;
+
+        const selectValues = [StartMonth, EndMonth, StartYear, EndYear];
+
+        db.query(selectSql, selectValues, (err, results) => {
+            if (err) {
+                console.error('Error fetching data:', err);
+                return res.status(500).json({
+                    result: 'Failure',
+                    message: 'Database error during fetch'
+                });
+            }
+
+            if (results.length === 0) {
+                return res.status(404).json({
+                    result: 'Failure',
+                    message: 'No records found for the provided parameters'
+                });
+            }
+
+            // Successfully fetched data
+            res.status(200).json({
+                result: 'Success',
+                data: results
+            });
+        });
+    });
+});
+
 
 
 
