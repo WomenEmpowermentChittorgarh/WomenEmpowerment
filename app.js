@@ -641,6 +641,9 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
             updatedBy,
         } = req.body;
 
+        console.log(formid);
+        
+
         if (formid) {
             // Update logic if formid is provided
             const updateSql = `
