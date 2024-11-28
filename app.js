@@ -596,7 +596,7 @@ app.post('/verify-otp', (req, res) => {
             // User exists, return details
             const user = userResults[0];
             res.status(200).json(responseHandler("Success", 200, "Data Fetched", {
-                isExistingUser: true,
+                isExistingUser: 1,
                 userName: user.userName,
                 userId: user.userId,
                 isWorker: user.isWorker // Convert to boolean
