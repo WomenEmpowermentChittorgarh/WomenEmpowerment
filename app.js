@@ -539,7 +539,8 @@ app.post('/login', (req, res) => {
         console.log(`Sending OTP ${otp} to ${phoneNumber}`);
 
         res.status(200).json(responseHandler("Success", 200, "OTP sent successfully", {
-            phoneNumber
+            mobileNumber: phoneNumber,
+            otp: otp
         }));
     });
 });
