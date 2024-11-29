@@ -344,7 +344,7 @@ app.get('/getmpr/:id', VerifyUserToken, (req, res) => {
     })
 });
 
-app.post('/mpr', VerifyUserToken, (req, res) => {
+app.post('/save-progress-report', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
             res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
@@ -389,7 +389,7 @@ app.post('/mpr', VerifyUserToken, (req, res) => {
             ], (err, data) => {
                 if (err) {
                     console.error("Database error:", err);
-                    return res.status(500).json(responseHandler("Failure", 500, "Database error"));
+                    return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
                 }
                 return res.status(200).json(responseHandler("Success", 200, "MPR added successfully", { block_id: data.insertId }));
             });
