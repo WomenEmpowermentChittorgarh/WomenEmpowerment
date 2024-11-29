@@ -654,10 +654,8 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
             createdAt,
             updatedAt,
             updatedBy,
-            StartMonth, // New field
-            EndMonth,   // New field
-            StartYear,  // New field
-            EndYear     // New field
+            month, // New field
+            year,   // New field
         } = req.body;
 
         if (formid) {
@@ -678,10 +676,8 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 specific_description = ?, 
                 updatedAt = ?, 
                 updatedBy = ?, 
-                StartMonth = ?, 
-                EndMonth = ?, 
-                StartYear = ?, 
-                EndYear = ?
+                month = ?, 
+                year = ?
               WHERE id = ?
             `;
 
@@ -699,10 +695,8 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 specific_description,
                 updatedAt,
                 updatedBy,
-                StartMonth, 
-                EndMonth,   
-                StartYear,  
-                EndYear,    
+                month, 
+                year,   
                 formid
             ];
 
@@ -723,8 +717,8 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post, 
                 monthly_payment, newly_selected_sathin, newly_selected_sathin_basic_training, 
                 newly_selected_sathin_no_training, specific_description, createdBy, createdAt, 
-                updatedAt, updatedBy, StartMonth, EndMonth, StartYear, EndYear
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                updatedAt, updatedBy, month, year
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             const insertValues = [
@@ -743,10 +737,8 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 createdAt,
                 updatedAt,
                 updatedBy,
-                StartMonth, 
-                EndMonth,   
-                StartYear,  
-                EndYear     
+                month, 
+                year
             ];
 
             db.query(insertSql, insertValues, (err, result) => {
