@@ -31,7 +31,6 @@ app.use('/token', tokenRoutes);
 
 // Error handling for unmatched routes
 app.use((req, res) => {
-    print(req);
     res.status(404).json({
         statusCode: 404,
         status: "Not Found",
