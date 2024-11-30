@@ -5,18 +5,35 @@ const responseHandler = require('../utils/responseHandler');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    const sql = 'SELECT * FROM MonthlyProgressReport';
+router.get('/all', (req, res) => {
+    const sql = 'SELECT * FROM monthly_progress_report';
     db.query(sql, (err, data) => {
         if (err) {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
-        res.status(200).json(responseHandler("Success", 200, "MPRs fetched successfully", { data }));
+        res.status(200).json(responseHandler("Success", 200, "MPRs Fetched Successfully", { data }));
     });
 });
 
-router.post('/', VerifyUserToken, (req, res) => {
+router.get('/byUserId', VerifyUserToken, (req, res) => {
+    const { userId } = req.query;
+
+    if (!userId) {
+        return res.status(400).json(responseHandler("Bad Request", 400, "User ID is required"));
+    }
+
+    const sql = 'SELECT * FROM monthly_progress_report WHERE createdBy = ?';
+    db.query(sql, [userId], (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+        }
+        res.status(200).json(responseHandler("Success", 200, "MPR Fetched Successfully", { data }));
+    });
+});
+
+router.post('/save', VerifyUserToken, (req, res) => {
     const {
         start_month, end_month, start_year, end_year, block,
         previous_month_cases_recieved, current_month_cases_recieved, total_cases_recieved,
@@ -31,10 +48,11 @@ router.post('/', VerifyUserToken, (req, res) => {
     }
 
     const sql = `
-        INSERT INTO MonthlyProgressReport 
-        (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, CurrentMonthCasesRecieved, 
-        TotalCasesRecieved, PreviousMonthCasesResolved, CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, 
-        MedicalAssistance, ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
+        INSERT INTO monthly_progress_report 
+        (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
+        CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
+        CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
+        ShelterHomeAssistance, DIRAssistance, Other, PromotionalActivitiesNumber, 
         NumberOfMeetingsOfDistrictMahilaSamadhanSamiti, Comment, createdBy, createdAt, updatedBy, updatedAt) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
@@ -51,7 +69,7 @@ router.post('/', VerifyUserToken, (req, res) => {
     db.query(sql, values, (err, result) => {
         if (err) {
             console.error(err);
-            return res.status(500).json(responseHandler("Failure", 500, "Database error"));
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
         res.status(200).json(responseHandler("Success", 200, "MPR added successfully", { id: result.insertId }));
     });

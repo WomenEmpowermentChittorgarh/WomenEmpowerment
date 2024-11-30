@@ -12,7 +12,7 @@ router.get('/', VerifyUserToken, (req, res) => {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
-        res.status(200).json(responseHandler("Success", 200, "Blocks fetched successfully", { data }));
+        res.status(200).json(responseHandler("Success", 200, "Blocks Fetched Successfully", { data }));
     });
 });
 
@@ -26,7 +26,7 @@ router.post('/', VerifyUserToken, (req, res) => {
     const sql = 'INSERT INTO blocks (name) VALUES (?)';
     db.query(sql, [Name], (err) => {
         if (err) {
-            console.error(err);
+            console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Block already exists"));
         }
         res.status(200).json(responseHandler("Success", 200, "Block added successfully"));

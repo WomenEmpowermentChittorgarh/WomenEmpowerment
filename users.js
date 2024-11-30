@@ -1,19 +1,17 @@
 const express = require('express');
-const db = require('../db'); // Assuming you have a db.js for database connection
-const logger = require('../logger'); // Logger utility
-const responseHandler = require('../utils/responseHandler'); // Utility function
+const db = require('../db'); // Import the database connection
+const responseHandler = require('../utils/responseHandler');
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    logger.log("debug", "Fetching all users");
     const sql = 'SELECT * FROM users';
     db.query(sql, (err, data) => {
         if (err) {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
-        return res.status(200).json(responseHandler("Success", 200, "Users fetched successfully", { data }));
+        return res.status(200).json(responseHandler("Success", 200, "Users Fetched successfully", { data }));
     });
 });
 
@@ -28,7 +26,7 @@ router.get('/:id', (req, res) => {
         if (data.length === 0) {
             return res.status(404).json(responseHandler("Not Found", 404, "User not found"));
         }
-        return res.status(200).json(responseHandler("Success", 200, "User fetched successfully", { data: data[0] }));
+        return res.status(200).json(responseHandler("Success", 200, "User Fetched successfully", { data: data[0] }));
     });
 });
 
@@ -39,9 +37,9 @@ router.post('/user_details', (req, res) => {
         return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
     }
 
-    const findUserSql = 'SELECT * FROM users WHERE Phone = ?';
-    const updateUserSql = 'UPDATE users SET FullName = ? WHERE Phone = ?';
-    const insertUserSql = 'INSERT INTO users (FullName, Phone, is_worker) VALUES (?, ?, 0)';
+    const findUserSql = 'SELECT * FROM users WHERE mobile_number = ?';
+    const updateUserSql = 'UPDATE users SET user_name = ? WHERE mobile_number = ?';
+    const insertUserSql = 'INSERT INTO users (user_name, mobile_number, is_worker) VALUES (?, ?, 0)';
 
     db.query(findUserSql, [phone], (err, results) => {
         if (err) {

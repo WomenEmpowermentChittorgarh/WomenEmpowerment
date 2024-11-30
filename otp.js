@@ -22,12 +22,12 @@ router.post('/login', (req, res) => {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Failed to save OTP"));
         }
-        console.log(`OTP ${otp} sent to ${phoneNumber}`); // Replace with actual SMS API
+        console.log(`OTP ${otp} sent to ${phoneNumber}`); // Replace with actual SMS service
         res.status(200).json(responseHandler("Success", 200, "OTP sent successfully"));
     });
 });
 
-router.post('/verify-otp', (req, res) => {
+router.post('/verify', (req, res) => {
     const { phoneNumber, otp } = req.body;
 
     if (!phoneNumber || !otp) {

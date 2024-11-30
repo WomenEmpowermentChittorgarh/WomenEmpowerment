@@ -96,9 +96,9 @@ app.post('/user_details', (req, res) => {
         return res.status(400).json(responseHandler("Bad Request", 400, " All fields are required"));
     }
 
-    const findUserSql = 'SELECT * FROM users WHERE Phone = ?';
-    const updateUserSql = 'UPDATE users SET FullName = ? WHERE Phone = ?';
-    const insertUserSql = 'INSERT INTO users (FullName, Phone, is_worker) VALUES (?, ?, 0)';
+    const findUserSql = 'SELECT * FROM users WHERE mobile_number = ?';
+    const updateUserSql = 'UPDATE users SET user_name = ? WHERE mobile_number = ?';
+    const insertUserSql = 'INSERT INTO users (user_name, mobile_number, is_worker) VALUES (?, ?, 0)';
 
     db.query(findUserSql, [phone], (err, results) => {
         if (err) {
@@ -151,17 +151,17 @@ app.get('/schemes', VerifyUserToken, (req, res) => {
 
 
 app.post('/scheme', upload.single('Image'), (req, res) => {
-    const { SchemeName, Description, WebsiteUrl } = req.body;
+    const { schemeName, description, website_url } = req.body;
 
     // Validate input fields
-    if (!SchemeName || !Description || !WebsiteUrl || !req.file) {
+    if (!schemeName || !description || !website_url || !req.file) {
         res.status(400).json(responseHandler("Alert", 400, " All fields are required, including Image"));
         return res.status(400).json(responseHandler("Alert", 400, " All fields are required, including Image"));
     }
 
     // Insert the scheme data into the database
-    const sql = 'INSERT INTO schemes (SchemeName, Description, WebsiteUrl, Image) VALUES (?, ?, ?, ?)';
-    db.query(sql, [SchemeName, Description, WebsiteUrl, ''], (err, data) => {
+    const sql = 'INSERT INTO schemes (scheme_name, description, website_url, image) VALUES (?, ?, ?, ?)';
+    db.query(sql, [schemeName, description, website_url, ''], (err, data) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
@@ -296,7 +296,7 @@ app.post('/block', VerifyUserToken, (req, res) => {
 
 app.get('/getallMPR', (req, res) => {
     logger.log("debug", "Hello, World!"); //debug level as first param
-    const sql = 'SELECT * FROM MonthlyProgressReport';
+    const sql = 'SELECT * FROM monthly_progress_report';
     db.query(sql, (err, data) => {
         if (err) {
             console.error(err);
@@ -312,7 +312,7 @@ app.get('/getmprbymonthyear', (req, res) => {
         return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
     }
     logger.log("debug", "Hello, World!"); //debug level as first param
-    const sql = 'SELECT * FROM `MonthlyProgressReport` WHERE StartMonth=? AND EndMonth=? AND StartYear=? AND EndYear=?';
+    const sql = 'SELECT * FROM `monthly_progress_report` WHERE StartMonth=? AND EndMonth=? AND StartYear=? AND EndYear=?';
     db.query(sql, [StartMonth, EndMonth, StartYear, EndYear], (err, data) => {
         if (err) {
             console.error(err);
@@ -322,18 +322,18 @@ app.get('/getmprbymonthyear', (req, res) => {
     });
 });
 
-app.get('/getmpr/:id', VerifyUserToken, (req, res) => {
+app.get('/fetchMonthlyReportByUserId', VerifyUserToken, (req, res) => {
+    const {userId} = req.query
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
             res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         } else {
-            const user_id = req.params.id;  // Assuming this is an integer ID
-            if (!user_id) {
+            if (!userId) {
                 return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
             }
             logger.log("debug", "Hello, World!"); //debug level as first param
-            const sql = 'SELECT * FROM `MonthlyProgressReport` WHERE createdBy=?';
-            db.query(sql, [user_id], (err, data) => {
+            const sql = 'SELECT * FROM `monthly_progress_report` WHERE createdBy=?';
+            db.query(sql, [userId], (err, data) => {
                 if (err) {
                     console.error(err);
                     return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
@@ -344,7 +344,7 @@ app.get('/getmpr/:id', VerifyUserToken, (req, res) => {
     })
 });
 
-app.post('/mpr', VerifyUserToken, (req, res) => {
+app.post('/save-progress-report', VerifyUserToken, (req, res) => {
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
             res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
@@ -368,7 +368,7 @@ app.post('/mpr', VerifyUserToken, (req, res) => {
             }
 
             const sql = `
-                INSERT INTO MonthlyProgressReport 
+                INSERT INTO monthly_progress_report 
                 (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
                 CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
                 CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
@@ -389,7 +389,7 @@ app.post('/mpr', VerifyUserToken, (req, res) => {
             ], (err, data) => {
                 if (err) {
                     console.error("Database error:", err);
-                    return res.status(500).json(responseHandler("Failure", 500, "Database error"));
+                    return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
                 }
                 return res.status(200).json(responseHandler("Success", 200, "MPR added successfully", { block_id: data.insertId }));
             });
@@ -421,7 +421,7 @@ app.put('/MPR/:id', VerifyUserToken, (req, res) => {
             }
 
             const sql = `
-                UPDATE MonthlyProgressReport 
+                UPDATE monthly_progress_report 
                 SET 
                     startMonth = ?, 
                     endMonth = ?, 
@@ -539,14 +539,15 @@ app.post('/login', (req, res) => {
         console.log(`Sending OTP ${otp} to ${phoneNumber}`);
 
         res.status(200).json(responseHandler("Success", 200, "OTP sent successfully", {
-            phoneNumber
+            phoneNumber,
+            otp
         }));
     });
 });
 
 
 const generateOTP = () => {
-    return Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
+    return "1111";//Math.floor(1000 + Math.random() * 9000).toString(); // 4-digit OTP
 };
 
 app.post('/verify-otp', (req, res) => {
@@ -576,7 +577,7 @@ app.post('/verify-otp', (req, res) => {
         const getUserQuery = `
             SELECT id AS userId, fullname AS userName, is_worker AS isWorker
             FROM users
-            WHERE phone = ?
+            WHERE mobile_number = ?
         `;
 
         db.query(getUserQuery, [phoneNumber], (err, userResults) => {
@@ -596,7 +597,7 @@ app.post('/verify-otp', (req, res) => {
             // User exists, return details
             const user = userResults[0];
             res.status(200).json(responseHandler("Success", 200, "Data Fetched", {
-                isExistingUser: true,
+                isExistingUser: 1,
                 userName: user.userName,
                 userId: user.userId,
                 isWorker: user.isWorker // Convert to boolean
@@ -638,6 +639,7 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
 
         const {
             formid, // Optional field to determine update or insert
+            block,
             total_approved_sathin,
             total_working_sathin,
             general,
@@ -653,10 +655,8 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
             createdAt,
             updatedAt,
             updatedBy,
-            StartMonth, // New field
-            EndMonth,   // New field
-            StartYear,  // New field
-            EndYear     // New field
+            month, // New field
+            year,   // New field
         } = req.body;
 
         if (formid) {
@@ -664,6 +664,7 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
             const updateSql = `
               UPDATE sathin_mpr
               SET 
+                block = ?,
                 total_approved_sathin = ?, 
                 total_working_sathin = ?, 
                 general = ?, 
@@ -677,14 +678,13 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 specific_description = ?, 
                 updatedAt = ?, 
                 updatedBy = ?, 
-                StartMonth = ?, 
-                EndMonth = ?, 
-                StartYear = ?, 
-                EndYear = ?
+                month = ?, 
+                year = ?
               WHERE id = ?
             `;
 
             const updateValues = [
+                block,
                 total_approved_sathin,
                 total_working_sathin,
                 general,
@@ -698,10 +698,8 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 specific_description,
                 updatedAt,
                 updatedBy,
-                StartMonth, 
-                EndMonth,   
-                StartYear,  
-                EndYear,    
+                month, 
+                year,   
                 formid
             ];
 
@@ -719,14 +717,15 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
             // Insert logic if formid is not provided
             const insertSql = `
               INSERT INTO sathin_mpr (
-                total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post, 
+                block, total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post, 
                 monthly_payment, newly_selected_sathin, newly_selected_sathin_basic_training, 
                 newly_selected_sathin_no_training, specific_description, createdBy, createdAt, 
-                updatedAt, updatedBy, StartMonth, EndMonth, StartYear, EndYear
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                updatedAt, updatedBy, month, year
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             const insertValues = [
+                block,
                 total_approved_sathin,
                 total_working_sathin,
                 general,
@@ -742,10 +741,8 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
                 createdAt,
                 updatedAt,
                 updatedBy,
-                StartMonth, 
-                EndMonth,   
-                StartYear,  
-                EndYear     
+                month, 
+                year
             ];
 
             db.query(insertSql, insertValues, (err, result) => {
