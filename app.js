@@ -639,6 +639,7 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
 
         const {
             formid, // Optional field to determine update or insert
+            block,
             total_approved_sathin,
             total_working_sathin,
             general,
@@ -663,6 +664,7 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
             const updateSql = `
               UPDATE sathin_mpr
               SET 
+                block = ?,
                 total_approved_sathin = ?, 
                 total_working_sathin = ?, 
                 general = ?, 
@@ -682,6 +684,7 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
             `;
 
             const updateValues = [
+                block,
                 total_approved_sathin,
                 total_working_sathin,
                 general,
@@ -714,14 +717,15 @@ app.post('/sathin_mpr', VerifyUserToken, (req, res) => {
             // Insert logic if formid is not provided
             const insertSql = `
               INSERT INTO sathin_mpr (
-                total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post, 
+                block, total_approved_sathin, total_working_sathin, general, scsp, tsp, vacant_post, 
                 monthly_payment, newly_selected_sathin, newly_selected_sathin_basic_training, 
                 newly_selected_sathin_no_training, specific_description, createdBy, createdAt, 
                 updatedAt, updatedBy, month, year
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             const insertValues = [
+                block,
                 total_approved_sathin,
                 total_working_sathin,
                 general,
