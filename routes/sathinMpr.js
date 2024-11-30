@@ -16,7 +16,7 @@ router.get('/all', VerifyUserToken, (req, res) => {
     });
 });
 
-router.post('/save', VerifyUserToken, (req, res) => {
+router.post('/save-sathin_mpr', VerifyUserToken, (req, res) => {
     const {
         formid, block, total_approved_sathin, total_working_sathin, general, scsp, tsp,
         vacant_post, monthly_payment, newly_selected_sathin, newly_selected_sathin_basic_training,
@@ -98,6 +98,23 @@ router.get('/', VerifyUserToken, (req, res) => {
             return res.status(404).json(responseHandler("Not Found", 404, "No records found for the provided parameters"));
         }
         res.status(200).json(responseHandler("Success", 200, "Data fetched successfully", results));
+    });
+});
+
+router.get('/fetchSathinReportByUserId', VerifyUserToken, (req, res) => {
+    const { userId } = req.query;
+
+    if (!userId) {
+        return res.status(400).json(responseHandler("Bad Request", 400, "User ID is required"));
+    }
+
+    const sql = 'SELECT * FROM sathin_mpr WHERE createdBy = ?';
+    db.query(sql, [userId], (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+        }
+        res.status(200).json(responseHandler("Success", 200, "Sathin MPR Fetched Successfully", { data }));
     });
 });
 

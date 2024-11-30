@@ -16,7 +16,7 @@ router.get('/all', (req, res) => {
     });
 });
 
-router.get('/byUserId', VerifyUserToken, (req, res) => {
+router.get('/fetchMonthlyReportByUserId', VerifyUserToken, (req, res) => {
     const { userId } = req.query;
 
     if (!userId) {
@@ -33,7 +33,7 @@ router.get('/byUserId', VerifyUserToken, (req, res) => {
     });
 });
 
-router.post('/save', VerifyUserToken, (req, res) => {
+router.post('/save-progress-report', VerifyUserToken, (req, res) => {
     const {
         start_month, end_month, start_year, end_year, block,
         previous_month_cases_recieved, current_month_cases_recieved, total_cases_recieved,
