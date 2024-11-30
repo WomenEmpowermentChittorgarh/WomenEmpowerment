@@ -322,18 +322,18 @@ app.get('/getmprbymonthyear', (req, res) => {
     });
 });
 
-app.get('/getmpr/:id', VerifyUserToken, (req, res) => {
+app.get('/getmpr', VerifyUserToken, (req, res) => {
+    const {userId} = req.query
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
             res.status(403).json(responseHandler("Forbidden", 403, "Invalid Token"));
         } else {
-            const user_id = req.params.id;  // Assuming this is an integer ID
-            if (!user_id) {
+            if (!userId) {
                 return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
             }
             logger.log("debug", "Hello, World!"); //debug level as first param
             const sql = 'SELECT * FROM `MonthlyProgressReport` WHERE createdBy=?';
-            db.query(sql, [user_id], (err, data) => {
+            db.query(sql, [userId], (err, data) => {
                 if (err) {
                     console.error(err);
                     return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
