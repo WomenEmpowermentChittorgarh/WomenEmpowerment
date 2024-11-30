@@ -96,9 +96,9 @@ app.post('/user_details', (req, res) => {
         return res.status(400).json(responseHandler("Bad Request", 400, " All fields are required"));
     }
 
-    const findUserSql = 'SELECT * FROM users WHERE Phone = ?';
-    const updateUserSql = 'UPDATE users SET FullName = ? WHERE Phone = ?';
-    const insertUserSql = 'INSERT INTO users (FullName, Phone, is_worker) VALUES (?, ?, 0)';
+    const findUserSql = 'SELECT * FROM users WHERE mobile_number = ?';
+    const updateUserSql = 'UPDATE users SET user_name = ? WHERE mobile_number = ?';
+    const insertUserSql = 'INSERT INTO users (user_name, mobile_number, is_worker) VALUES (?, ?, 0)';
 
     db.query(findUserSql, [phone], (err, results) => {
         if (err) {
@@ -151,17 +151,17 @@ app.get('/schemes', VerifyUserToken, (req, res) => {
 
 
 app.post('/scheme', upload.single('Image'), (req, res) => {
-    const { SchemeName, Description, WebsiteUrl } = req.body;
+    const { schemeName, description, website_url } = req.body;
 
     // Validate input fields
-    if (!SchemeName || !Description || !WebsiteUrl || !req.file) {
+    if (!schemeName || !description || !website_url || !req.file) {
         res.status(400).json(responseHandler("Alert", 400, " All fields are required, including Image"));
         return res.status(400).json(responseHandler("Alert", 400, " All fields are required, including Image"));
     }
 
     // Insert the scheme data into the database
-    const sql = 'INSERT INTO schemes (SchemeName, Description, WebsiteUrl, Image) VALUES (?, ?, ?, ?)';
-    db.query(sql, [SchemeName, Description, WebsiteUrl, ''], (err, data) => {
+    const sql = 'INSERT INTO schemes (scheme_name, description, website_url, image) VALUES (?, ?, ?, ?)';
+    db.query(sql, [schemeName, description, website_url, ''], (err, data) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
@@ -296,7 +296,7 @@ app.post('/block', VerifyUserToken, (req, res) => {
 
 app.get('/getallMPR', (req, res) => {
     logger.log("debug", "Hello, World!"); //debug level as first param
-    const sql = 'SELECT * FROM MonthlyProgressReport';
+    const sql = 'SELECT * FROM monthly_progress_report';
     db.query(sql, (err, data) => {
         if (err) {
             console.error(err);
@@ -312,7 +312,7 @@ app.get('/getmprbymonthyear', (req, res) => {
         return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
     }
     logger.log("debug", "Hello, World!"); //debug level as first param
-    const sql = 'SELECT * FROM `MonthlyProgressReport` WHERE StartMonth=? AND EndMonth=? AND StartYear=? AND EndYear=?';
+    const sql = 'SELECT * FROM `monthly_progress_report` WHERE StartMonth=? AND EndMonth=? AND StartYear=? AND EndYear=?';
     db.query(sql, [StartMonth, EndMonth, StartYear, EndYear], (err, data) => {
         if (err) {
             console.error(err);
@@ -322,7 +322,7 @@ app.get('/getmprbymonthyear', (req, res) => {
     });
 });
 
-app.get('/getmpr', VerifyUserToken, (req, res) => {
+app.get('/fetchMonthlyReportByUserId', VerifyUserToken, (req, res) => {
     const {userId} = req.query
     jwt.verify(req.token, UserSecretKey, (err, auth_data) => {
         if (err) {
@@ -332,7 +332,7 @@ app.get('/getmpr', VerifyUserToken, (req, res) => {
                 return res.status(400).json(responseHandler("Bad Request", 400, "All fields are required"));
             }
             logger.log("debug", "Hello, World!"); //debug level as first param
-            const sql = 'SELECT * FROM `MonthlyProgressReport` WHERE createdBy=?';
+            const sql = 'SELECT * FROM `monthly_progress_report` WHERE createdBy=?';
             db.query(sql, [userId], (err, data) => {
                 if (err) {
                     console.error(err);
@@ -368,7 +368,7 @@ app.post('/save-progress-report', VerifyUserToken, (req, res) => {
             }
 
             const sql = `
-                INSERT INTO MonthlyProgressReport 
+                INSERT INTO monthly_progress_report 
                 (StartMonth, EndMonth, StartYear, EndYear, Block, PreviousMonthCasesRecieved, 
                 CurrentMonthCasesRecieved, TotalCasesRecieved, PreviousMonthCasesResolved, 
                 CurrentMonthCasesResolved, TotalCasesResolved, CasesWithFir, MedicalAssistance, 
@@ -421,7 +421,7 @@ app.put('/MPR/:id', VerifyUserToken, (req, res) => {
             }
 
             const sql = `
-                UPDATE MonthlyProgressReport 
+                UPDATE monthly_progress_report 
                 SET 
                     startMonth = ?, 
                     endMonth = ?, 
@@ -577,7 +577,7 @@ app.post('/verify-otp', (req, res) => {
         const getUserQuery = `
             SELECT id AS userId, fullname AS userName, is_worker AS isWorker
             FROM users
-            WHERE phone = ?
+            WHERE mobile_number = ?
         `;
 
         db.query(getUserQuery, [phoneNumber], (err, userResults) => {
