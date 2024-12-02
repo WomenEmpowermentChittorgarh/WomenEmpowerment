@@ -37,7 +37,7 @@ router.post('/verify-otp', (req, res) => {
     // Query to verify OTP
     const verifyOtpQuery = `
         SELECT * FROM otp_table
-        WHERE phone_number = ? AND otp = ? AND expires_at > NOW()
+          WHERE phone_number = ? AND otp = ? AND expires_at > NOW()
     `;
 
     db.query(verifyOtpQuery, [phoneNumber, otp], (err, otpResults) => {
@@ -52,7 +52,7 @@ router.post('/verify-otp', (req, res) => {
 
         // Query to check if user exists
         const getUserQuery = `
-            SELECT id AS userId, fullname AS userName, is_worker AS isWorker
+            SELECT id AS userId, user_name AS userName, is_worker AS isWorker
             FROM users
             WHERE mobile_number = ?
         `;
