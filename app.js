@@ -25,7 +25,7 @@ app.use('/users', userRoutes);
 app.use('/schemes', schemeRoutes);
 app.use('/blocks', blockRoutes);
 app.use('/mpr', mprRoutes);
-app.use('/otp', otpRoutes);
+app.use('/user-onboarding', otpRoutes);
 app.use('/sathin-mpr', sathinMprRoutes);
 app.use('/token', tokenRoutes);
 
