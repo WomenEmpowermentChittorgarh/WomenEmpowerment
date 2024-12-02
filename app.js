@@ -16,7 +16,7 @@ const userRoutes = require('./routes/users');
 const schemeRoutes = require('./routes/schemes');
 const blockRoutes = require('./routes/blocks');
 const mprRoutes = require('./routes/mpr');
-const otpRoutes = require('./routes/otp');
+const otpRoutes = require('./routes/user_onboarding');
 const sathinMprRoutes = require('./routes/sathinMpr');
 
 // Mounting routes
