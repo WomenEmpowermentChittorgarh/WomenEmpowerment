@@ -18,7 +18,6 @@ const blockRoutes = require('./routes/blocks');
 const mprRoutes = require('./routes/mpr');
 const otpRoutes = require('./routes/otp');
 const sathinMprRoutes = require('./routes/sathinMpr');
-const tokenRoutes = require('./routes/token');
 
 // Mounting routes
 app.use('/users', userRoutes);
@@ -27,7 +26,6 @@ app.use('/blocks', blockRoutes);
 app.use('/mpr', mprRoutes);
 app.use('/user-onboarding', otpRoutes);
 app.use('/sathin-mpr', sathinMprRoutes);
-app.use('/token', tokenRoutes);
 
 // Error handling for unmatched routes
 app.use((req, res) => {
