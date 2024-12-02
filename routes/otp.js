@@ -27,7 +27,7 @@ router.post('/login', (req, res) => {
     });
 });
 
-router.post('/verify', (req, res) => {
+router.post('/verify-otp', (req, res) => {
     const { phoneNumber, otp } = req.body;
 
     if (!phoneNumber || !otp) {
