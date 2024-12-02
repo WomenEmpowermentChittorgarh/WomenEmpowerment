@@ -37,7 +37,7 @@ router.post('/verify-otp', (req, res) => {
         return res.status(400).json(responseHandler("Bad Request", 400, "Phone number and OTP are required", null));
     }
 
-    if (phoneNumber == "8769972302") {
+    if (phoneNumber == "8769972302" && otp == "1111") {
       // Query to check if user exists
       const getUserQuery = `
           SELECT id AS userId, user_name AS userName, is_worker AS isWorker
