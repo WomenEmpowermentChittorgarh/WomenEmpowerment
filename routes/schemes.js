@@ -7,6 +7,8 @@ const db = require('../db');
 const responseHandler = require('../utils/responseHandler');
 const VerifyUserToken = require('../middleware/VerifyUserToken');
 
+express.static(path.join(__dirname, 'schemes'))
+
 const router = express.Router();
 
 const storage = multer.diskStorage({
