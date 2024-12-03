@@ -26,6 +26,7 @@ app.use('/blocks', blockRoutes);
 app.use('/mpr', mprRoutes);
 app.use('/user-onboarding', otpRoutes);
 app.use('/sathin-mpr', sathinMprRoutes);
+app.use('/schemesImg', express.static(path.join(__dirname, 'schemes')));
 
 // Error handling for unmatched routes
 app.use((req, res) => {
