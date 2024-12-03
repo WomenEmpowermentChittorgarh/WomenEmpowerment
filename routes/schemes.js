@@ -88,7 +88,7 @@ router.post('/', upload.single('Image'), (req, res) => {
     });
 });
 
-router.delete('/scheme/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
     const schemeId = req.params.id;
 
     // Check if the scheme exists and retrieve the image path
