@@ -11,7 +11,7 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const tempDir = path.join(__dirname, '../schemes');
+        const tempDir = path.join(__dirname, '../schemesImg');
         if (!fs.existsSync(tempDir)) {
             fs.mkdirSync(tempDir, { recursive: true });
         }
