@@ -11,7 +11,7 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const tempDir = path.join(__dirname, '../schemesImg');
+        const tempDir = path.join(__dirname, '../schemes');
         if (!fs.existsSync(tempDir)) {
             fs.mkdirSync(tempDir, { recursive: true });
         }
@@ -87,46 +87,5 @@ router.post('/', upload.single('Image'), (req, res) => {
         });
     });
 });
-
-// router.delete('/:id', (req, res) => {
-//     const schemeId = req.params.id;
-
-//     // Check if the scheme exists and retrieve the image path
-//     const sqlSelect = 'SELECT Image FROM schemes WHERE id = ?';
-//     db.query(sqlSelect, [schemeId], (err, result) => {
-//         if (err) {
-//             console.error("Database error:", err);
-//             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
-//         }
-
-//         if (result.length === 0) {
-//             return res.status(404).json(responseHandler("Not Found", 404, "Scheme not found"));
-//         }
-
-//         const imagePath = result[0].Image;
-
-//         // Construct the folder path
-//         const schemeDir = path.join(__dirname, 'schemes', String(schemeId));
-
-//         // Delete the scheme data from the database
-//         const sqlDelete = 'DELETE FROM schemes WHERE id = ?';
-//         db.query(sqlDelete, [schemeId], (deleteErr) => {
-//             if (deleteErr) {
-//                 console.error("Database error during deletion:", deleteErr);
-//                 return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme from database"));
-//             }
-
-//             // Delete the folder containing the image
-//             fs.rm(schemeDir, { recursive: true, force: true }, (fsErr) => {
-//                 if (fsErr) {
-//                     console.error("File system error during folder deletion:", fsErr);
-//                     return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme folder"));
-//                 }
-
-//                 res.status(200).json(responseHandler("Success", 200, "Scheme deleted successfully"));
-//             });
-//         });
-//     });
-// });
 
 module.exports = router;
