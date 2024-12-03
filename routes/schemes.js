@@ -18,13 +18,25 @@ const storage = multer.diskStorage({
         cb(null, tempDir);
     },
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
+      var filename = file.originalname.replace(/ /g,"%20")
+        cb(null, `${Date.now()}-${filename}`);
     }
 });
 
 const upload = multer({ storage });
 
-router.get('/', VerifyUserToken, (req, res) => {
+router.get('/fetch-schemes', VerifyUserToken, (req, res) => {
+    const sql = 'SELECT * FROM schemes';
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+        }
+        res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { data }));
+    });
+});
+
+router.get('/get-schemescarousel', VerifyUserToken, (req, res) => {
     const sql = 'SELECT * FROM schemes';
     db.query(sql, (err, data) => {
         if (err) {
