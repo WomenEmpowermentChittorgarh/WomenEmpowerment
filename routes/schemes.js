@@ -44,7 +44,7 @@ router.get('/fetch-schemes', VerifyUserToken, (req, res) => {
 router.get('/getSchemeById', VerifyUserToken, (req, res) => {
   const { id } = req.query;
     const sql = 'SELECT * FROM schemes WHERE id = ?';
-    db.query(sql, (err, data) => {
+    db.query(sql, [id], (err, data) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
