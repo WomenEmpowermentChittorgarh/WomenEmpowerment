@@ -41,6 +41,19 @@ router.get('/fetch-schemes', VerifyUserToken, (req, res) => {
     });
 });
 
+router.get('/getSchemeById', VerifyUserToken, (req, res) => {
+  const { id } = req.query;
+    const sql = 'SELECT * FROM schemes where id = ?';
+    db.query(sql, (err, data) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+        }
+        res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { data }));
+    });
+});
+
+
 router.get('/get-schemes-carousel', VerifyUserToken, (req, res) => {
     const carouselImages = [
   ];
