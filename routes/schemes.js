@@ -68,7 +68,7 @@ router.post('/', upload.single('Image'), (req, res) => {
         return res.status(400).json(responseHandler("Alert", 400, "All fields are required, including Image"));
     }
 
-    const sql = 'INSERT INTO schemes (scheme_name, description, department_name, started_date  website_url, image) VALUES (?, ?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO schemes (scheme_name, description, department_name, started_date,  website_url, image) VALUES (?, ?, ?, ?, ?, ?)';
     db.query(sql, [schemeName, description, department_name, started_date, website_url, ''], (err, data) => {
         if (err) {
             console.error("Database error:", err);
