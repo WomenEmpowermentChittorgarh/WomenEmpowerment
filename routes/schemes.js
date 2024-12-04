@@ -47,15 +47,16 @@ router.get('/get-schemes-carousel', VerifyUserToken, (req, res) => {
   res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { carouselImages }));
 });
 
-router.post('/', upload.single('Image'), (req, res) => {
-    const { schemeName, description, website_url } = req.body;
 
-    if (!schemeName || !description || !website_url || !req.file) {
+router.post('/', upload.single('Image'), (req, res) => {
+    const { schemeName, description, department_name, started_date, website_url } = req.body;
+
+    if (!schemeName || !description || !department_name || !started_date || !website_url || !req.file) {
         return res.status(400).json(responseHandler("Alert", 400, "All fields are required, including Image"));
     }
 
-    const sql = 'INSERT INTO schemes (scheme_name, description, website_url, image) VALUES (?, ?, ?, ?)';
-    db.query(sql, [schemeName, description, website_url, ''], (err, data) => {
+    const sql = 'INSERT INTO schemes (scheme_name, description, department_name, started_date  website_url, image) VALUES (?, ?, ?, ?, ?, ?)';
+    db.query(sql, [schemeName, description, department_name, started_date, website_url, ''], (err, data) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
