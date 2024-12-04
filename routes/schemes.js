@@ -32,7 +32,7 @@ router.get('/fetch-schemes', VerifyUserToken, (req, res) => {
             console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
-        res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { data }));
+        res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { data.id, data.scheme_name, data.started_date }));
     });
 });
 
