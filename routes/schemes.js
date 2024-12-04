@@ -11,7 +11,7 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const tempDir = path.join(__dirname, '../schemes');
+        const tempDir = path.join(__dirname, '../schemesImg');
         if (!fs.existsSync(tempDir)) {
             fs.mkdirSync(tempDir, { recursive: true });
         }
@@ -57,7 +57,7 @@ router.post('/', upload.single('Image'), (req, res) => {
         }
 
         const schemeId = data.insertId;
-        const schemeDir = path.join(__dirname, '../schemes', String(schemeId));
+        const schemeDir = path.join(__dirname, '../schemesImg', String(schemeId));
         if (!fs.existsSync(schemeDir)) {
             fs.mkdirSync(schemeDir, { recursive: true });
         }
@@ -69,7 +69,7 @@ router.post('/', upload.single('Image'), (req, res) => {
                 return res.status(500).json(responseHandler("Failure", 500, "Error moving image"));
             }
 
-            const relativeFilePath = path.join('schemes', String(schemeId), req.file.originalname);
+            const relativeFilePath = path.join('schemesImg', String(schemeId), req.file.originalname);
             const updateSql = 'UPDATE schemes SET image = ? WHERE id = ?';
             db.query(updateSql, [relativeFilePath, schemeId], (updateErr) => {
                 if (updateErr) {

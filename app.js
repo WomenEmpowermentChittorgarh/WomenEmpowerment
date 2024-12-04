@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const logger = require('./logger');
 const db = require('./db'); // Database connection file
+const path = require('path');
 
 const app = express();
 
@@ -26,7 +27,7 @@ app.use('/blocks', blockRoutes);
 app.use('/mpr', mprRoutes);
 app.use('/user-onboarding', otpRoutes);
 app.use('/sathin-mpr', sathinMprRoutes);
-app.use('/schemesImg', express.static(path.join(__dirname, 'schemes')));
+app.use('/schemesImg', express.static(path.join(__dirname, 'schemesImg')));
 
 // Error handling for unmatched routes
 app.use((req, res) => {
