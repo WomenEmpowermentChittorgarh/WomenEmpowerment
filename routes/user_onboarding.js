@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('../db');
 const jwt = require('jsonwebtoken');
 const responseHandler = require('../utils/responseHandler');
+const axios = require('axios');
 
 const router = express.Router();
 
@@ -30,69 +31,43 @@ router.post('/login', (req, res) => {
     });
 });
 
-router.post('/verify-otp', (req, res) => {
-    const { phoneNumber, otp } = req.body;
+router.post('/verify-otp', async(req, res) => {
 
-    if (!phoneNumber || !otp) {
-        return res.status(400).json(responseHandler("Bad Request", 400, "Phone number and OTP are required", null));
-    }
+    const { accessToken } = req.body;
+    const authkey = '435917AeGqWKgcy6751eecfP1'
 
-    if (phoneNumber == "8769972302" && otp == "1111") {
-      // Query to check if user exists
-      const getUserQuery = `
-          SELECT id AS userId, user_name AS userName, is_worker AS isWorker
-          FROM users
-          WHERE mobile_number = ?
-      `;
+    if (!accessToken) {
+        return res.status(400).json({ error: 'accessToken is required' });
+      }
 
-      db.query(getUserQuery, [phoneNumber], (err, userResults) => {
-          if (err) {
-              console.error('Error fetching user details:', err);
-              return res.status(500).json(responseHandler("Failure", 400, "Failed to fetch user details", null));
+      try {
+        const response = await axios.post(
+          'https://control.msg91.com/api/v5/widget/verifyAccessToken',
+          {
+            authkey,
+            'access-token': accessToken,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
           }
+        );
+    
+        // Respond with the API response
+        res.status(response.status).json(response.data);
+        const fullNumber = response.data.message;
+        const numberWithoutCountryCode = fullNumber.startsWith('91')
+        ? fullNumber.slice(2) // Remove the first two characters
+        : fullNumber;
 
-          if (userResults.length === 0) {
-              // User does not exist
-              return res.status(200).json(responseHandler("Success", 200, "OTP verified", {
-                  isExistingUser: 0,
-                  message: 'OTP verified, but user not registered'
-              }));
-          }
-
-          // User exists, return details
-          const user = userResults[0];
-          res.status(200).json(responseHandler("Success", 200, "Data Fetched", {
-              isExistingUser: 1,
-              userName: user.userName,
-              userId: user.userId,
-              isWorker: user.isWorker // Convert to boolean
-          }));
-      });
-    } else {
-      // Query to verify OTP
-      const verifyOtpQuery = `
-          SELECT * FROM otp_table
-            WHERE phone_number = ? AND otp = ? AND expires_at > NOW()
-      `;
-
-      db.query(verifyOtpQuery, [phoneNumber, otp], (err, otpResults) => {
-          if (err) {
-              console.error('Error verifying OTP:', err);
-              return res.status(500).json(responseHandler("Failure", 500, "Failed to verify OTP", null));
-          }
-
-          if (otpResults.length === 0) {
-              return res.status(400).json(responseHandler("Failure", 400, "Invalid or expired OTP", null));
-          }
-
-          // Query to check if user exists
-          const getUserQuery = `
+        const getUserQuery = `
               SELECT id AS userId, user_name AS userName, is_worker AS isWorker
               FROM users
               WHERE mobile_number = ?
           `;
 
-          db.query(getUserQuery, [phoneNumber], (err, userResults) => {
+          db.query(getUserQuery, [numberWithoutCountryCode], (err, userResults) => {
               if (err) {
                   console.error('Error fetching user details:', err);
                   return res.status(500).json(responseHandler("Failure", 400, "Failed to fetch user details", null));
@@ -115,9 +90,16 @@ router.post('/verify-otp', (req, res) => {
                   isWorker: user.isWorker // Convert to boolean
               }));
           });
-      });
-    }
+
+
+      } catch (error) {
+        console.error('Error:', error.response?.data || error.message);
+        res
+          .status(error.response?.status || 500)
+          .json({ error: error.response?.data || 'Internal Server Error' });
+      }
 });
+ 
 
 router.get('/getUserToken', (req, res) => {
     const { userId } = req.query;
