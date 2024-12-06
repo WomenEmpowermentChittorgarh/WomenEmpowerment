@@ -4,6 +4,7 @@ const VerifyUserToken = require('../middleware/VerifyUserToken');
 const responseHandler = require('../utils/responseHandler');
 const ExcelJS = require('exceljs');
 const path = require('path');
+const fs = require('fs');
 
 const router = express.Router();
 
