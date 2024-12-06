@@ -87,6 +87,11 @@ router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
         }
 
         try {
+             // Ensure the 'downloads' directory exists
+             const downloadDir = path.join(__dirname, "../downloads");
+             if (!fs.existsSync(downloadDir)) {
+                 fs.mkdirSync(downloadDir, { recursive: true }); // Create the directory if it doesn't exist
+             }
             // Create a new workbook and worksheet
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet('Monthly Progress Report');
