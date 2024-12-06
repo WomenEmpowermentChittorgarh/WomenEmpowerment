@@ -98,11 +98,16 @@ router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
             const worksheet = workbook.addWorksheet('Monthly Progress Report');
 
             // Define headers
-            worksheet.columns = [
+            worksheet.columns=[
                 { header: "कार्यालय महिला अधिकारिता, चित्तौड़गढ़", width: 100 },
+            ]
+            worksheet.columns=[
                 { header: "महिला सुरक्षा एवं सलाह केन्द्र", width: 100 },
+            ]
+            worksheet.columns=[
                 { header: "मासिक प्रगति रिपोर्ट", width: 100 },
-                { header: "मासिक प्रगति रिपोर्ट", width: 100 },
+            ]
+            worksheet.columns = [
                 { header: "Start Month", key: "StartMonth", width: 20 },
                 { header: "End Month", key: "EndMonth", width: 20 },
                 { header: "Start Year", key: "StartYear", width: 15 },
