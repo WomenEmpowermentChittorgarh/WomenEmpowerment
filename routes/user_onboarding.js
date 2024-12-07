@@ -64,7 +64,7 @@ router.post('/verify-otp', async(req, res) => {
             : fullNumber;
 
             const getUserQuery = `
-                SELECT id AS userId, user_name AS userName, is_worker AS isWorker
+                SELECT id AS userId, user_name AS userName, is_worker AS isWorker, admin_access
                 FROM users
                 WHERE mobile_number = ?
             `;
