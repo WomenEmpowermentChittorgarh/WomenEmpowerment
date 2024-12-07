@@ -5,7 +5,12 @@ const responseHandler = require('../utils/responseHandler');
 const router = express.Router();
 
 router.get('/get-all-users', (req, res) => {
-    const sql = 'SELECT * FROM users';
+    const { userId } = req.query;
+    if (!userId) {
+        return res.status(400).json(responseHandler("Bad Request", 400, "User ID is required"));
+    }
+
+    const sql = 'SELECT * FROM users WHERE id <> ?';
     db.query(sql, (err, data) => {
         if (err) {
             console.error(err);
