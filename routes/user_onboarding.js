@@ -87,7 +87,8 @@ router.post('/verify-otp', async(req, res) => {
                   isExistingUser: 1,
                   userName: user.userName,
                   userId: user.userId,
-                  isWorker: user.isWorker // Convert to boolean
+                  isWorker: user.isWorker,
+                  admin_access: user.admin_access // Convert to boolean
               }));
           });
 
