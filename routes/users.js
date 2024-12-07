@@ -4,7 +4,7 @@ const responseHandler = require('../utils/responseHandler');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/get-all-users', (req, res) => {
     const sql = 'SELECT * FROM users';
     db.query(sql, (err, data) => {
         if (err) {
