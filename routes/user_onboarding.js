@@ -75,7 +75,6 @@ router.post('/verify-otp', async(req, res) => {
                     return res.status(500).json(responseHandler("Failure", 400, "Failed to fetch user details", null));
                 }
 
-<<<<<<< HEAD
               if (userResults.length === 0) {
                   // User does not exist
                   return res.status(200).json(responseHandler("Success", 200, "OTP verified", {
@@ -94,25 +93,6 @@ router.post('/verify-otp', async(req, res) => {
                   admin_access: user.admin_access // Convert to boolean
               }));
           });
-=======
-                if (userResults.length === 0) {
-                    // User does not exist
-                    return res.status(200).json(responseHandler("Success", 200, "OTP verified", {
-                        isExistingUser: 0,
-                        message: 'OTP verified, but user not registered'
-                    }));
-                }
->>>>>>> ff07b40c3116c96e84cde390e689805040cd3123
-
-                // User exists, return details
-                const user = userResults[0];
-                res.status(200).json(responseHandler("Success", 200, "Data Fetched", {
-                    isExistingUser: 1,
-                    userName: user.userName,
-                    userId: user.userId,
-                    isWorker: user.isWorker // Convert to boolean
-                }));
-            });
         }
         else{
             res.status(response.status).json(response.data);
