@@ -11,7 +11,7 @@ router.get('/get-all-users', (req, res) => {
     }
 
     const sql = 'SELECT * FROM users WHERE id <> ?';
-    db.query(sql, (err, data) => {
+    db.query(sql, [userId],(err, data) => {
         if (err) {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
