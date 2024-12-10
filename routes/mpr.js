@@ -106,67 +106,67 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
                     [{ value: '' }]                                            // Row 6 (Placeholder)
                 ];
     
-                // Define schema for the dynamic data
-                const schema = [
-                    { column: 'Block Name', type: String },
-                    { column: 'Previous Month Cases Received', type: Number },
-                    { column: 'Current Month Cases Received', type: Number },
-                    { column: 'Total Cases Received', type: Number },
-                    { column: 'Previous Month Cases Resolved', type: Number },
-                    { column: 'Current Month Cases Resolved', type: Number },
-                    { column: 'Total Cases Resolved', type: Number },
-                    { column: 'Cases With FIR', type: Number },
-                    { column: 'Medical Assistance', type: Number },
-                    { column: 'Shelter Home Assistance', type: Number },
-                    { column: 'DIR Assistance', type: Number },
-                    { column: 'Other', type: Number },
-                    { column: 'Promotional Activities Number', type: Number },
-                    { column: 'Number of Meetings', type: Number },
-                    { column: 'Comment', type: String },
-                    { column: 'Created By', type: String },
-                    { column: 'Created At', type: Date },
-                    { column: 'Updated At', type: Date },
-                    { column: 'Updated By', type: String },
-                    { column: 'Created By Name', type: String },
-                    { column: 'Updated By Name', type: String }
-                ];
-    
-                // Map database results to rows (7th to 15th rows)
-                const dynamicData = data.map(report => [
-                    report.block_name,
-                    report.PreviousMonthCasesRecieved,
-                    report.CurrentMonthCasesRecieved,
-                    report.TotalCasesRecieved,
-                    report.PreviousMonthCasesResolved,
-                    report.CurrentMonthCasesResolved,
-                    report.TotalCasesResolved,
-                    report.CasesWithFir,
-                    report.MedicalAssistance,
-                    report.ShelterHomeAssistance,
-                    report.DIRAssistance,
-                    report.Other,
-                    report.PromotionalActivitiesNumber,
-                    report.NumberOfMeetingsOfDistrictMahilaSamadhanSamiti,
-                    report.Comment,
-                    report.createdBy,
-                    new Date(report.createdAt),
-                    new Date(report.updatedAt),
-                    report.updatedBy,
-                    report.createdByName,
-                    report.updatedByName
-                ]);
+                // Define the schema for the dynamic data
+const schema = [
+    { column: 'Block Name', type: String },
+    { column: 'Previous Month Cases Received', type: Number },
+    { column: 'Current Month Cases Received', type: Number },
+    { column: 'Total Cases Received', type: Number },
+    { column: 'Previous Month Cases Resolved', type: Number },
+    { column: 'Current Month Cases Resolved', type: Number },
+    { column: 'Total Cases Resolved', type: Number },
+    { column: 'Cases With FIR', type: Number },
+    { column: 'Medical Assistance', type: Number },
+    { column: 'Shelter Home Assistance', type: Number },
+    { column: 'DIR Assistance', type: Number },
+    { column: 'Other', type: Number },
+    { column: 'Promotional Activities Number', type: Number },
+    { column: 'Number of Meetings', type: Number },
+    { column: 'Comment', type: String },
+    { column: 'Created By', type: String },
+    { column: 'Created At', type: Date },
+    { column: 'Updated At', type: Date },
+    { column: 'Updated By', type: String },
+    { column: 'Created By Name', type: String },
+    { column: 'Updated By Name', type: String }
+];
+
+// Map database results to match the schema
+const dynamicData = data.map(report => [
+    { value: report.block_name },
+    { value: report.PreviousMonthCasesRecieved || 0 },
+    { value: report.CurrentMonthCasesRecieved || 0 },
+    { value: report.TotalCasesRecieved || 0 },
+    { value: report.PreviousMonthCasesResolved || 0 },
+    { value: report.CurrentMonthCasesResolved || 0 },
+    { value: report.TotalCasesResolved || 0 },
+    { value: report.CasesWithFir || 0 },
+    { value: report.MedicalAssistance || 0 },
+    { value: report.ShelterHomeAssistance || 0 },
+    { value: report.DIRAssistance || 0 },
+    { value: report.Other || 0 },
+    { value: report.PromotionalActivitiesNumber || 0 },
+    { value: report.NumberOfMeetingsOfDistrictMahilaSamadhanSamiti || 0 },
+    { value: report.Comment || '' },
+    { value: report.createdBy || '' },
+    { value: new Date(report.createdAt) },
+    { value: new Date(report.updatedAt) },
+    { value: report.updatedBy || '' },
+    { value: report.createdByName || '' },
+    { value: report.updatedByName || '' }
+]);
     
                 // Combine static rows and dynamic data
                 const excelData = [...staticRows, ...dynamicData];
     
                 // File path for the generated Excel file
                 const filePath = path.join(__dirname, 'monthly_progress_report.xlsx');
-    
-                // Write the Excel file
-                await writeXlsxFile(dynamicData, {
-                    schema,
-                    filePath
-                });
+
+// Write the Excel file with the schema and data
+await writeXlsxFile(dynamicData, {
+    schema,
+    filePath
+});
     
                 // Send the generated file for download
                 res.download(filePath, 'monthly_progress_report.xlsx', (downloadErr) => {
