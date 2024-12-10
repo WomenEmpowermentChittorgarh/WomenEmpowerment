@@ -5,7 +5,6 @@ const responseHandler = require('../utils/responseHandler');
 const ExcelJS = require('exceljs');
 const path = require('path');
 const fs = require('fs');
-const writeXlsxFile = require('write-excel-file');
 
 const router = express.Router();
 
@@ -79,116 +78,72 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
     });
 });
 
-// router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
-    router.get('/downloadMonthlyReport', async (req, res) => {
-        const sql = 'SELECT * FROM monthly_progress_report';
+router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
+    const sql = 'SELECT * FROM monthly_progress_report';
     
-        db.query(sql, async (err, data) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
-            }
-    
-            try {
-                // Get dynamic start month, end month, start year, and end year
-                const startMonth = req.query.startMonth || 'January';
-                const endMonth = req.query.endMonth || 'March';
-                const startYear = req.query.startYear || '2024';
-                const endYear = req.query.endYear || '2025';
-    
-                // Static Rows (1st to 6th rows)
-                const staticRows = [
-                    [{ value: 'कार्यालय महिला अधिकारिता, चित्तौड़गढ़' }],    // Row 1
-                    [{ value: 'महिला सुरक्षा एवं सलाह केन्द्र' }],            // Row 2
-                    [{ value: 'मासिक प्रगति रिपोर्ट' }],                      // Row 3
-                    [{ value: `रिपोटिंग माह ${startMonth}-${endMonth} तक (वित्तीय वर्ष ${startYear}-${endYear})` }], // Row 4
-                    [{ value: '' }],                                           // Row 5 (Placeholder)
-                    [{ value: '' }]                                            // Row 6 (Placeholder)
-                ];
-    
-                // Define the schema for the dynamic data
-const schema = [
-    { column: 'Block Name', type: String },
-    { column: 'Previous Month Cases Received', type: Number },
-    { column: 'Current Month Cases Received', type: Number },
-    { column: 'Total Cases Received', type: Number },
-    { column: 'Previous Month Cases Resolved', type: Number },
-    { column: 'Current Month Cases Resolved', type: Number },
-    { column: 'Total Cases Resolved', type: Number },
-    { column: 'Cases With FIR', type: Number },
-    { column: 'Medical Assistance', type: Number },
-    { column: 'Shelter Home Assistance', type: Number },
-    { column: 'DIR Assistance', type: Number },
-    { column: 'Other', type: Number },
-    { column: 'Promotional Activities Number', type: Number },
-    { column: 'Number of Meetings', type: Number },
-    { column: 'Comment', type: String },
-    { column: 'Created By', type: String },
-    { column: 'Created At', type: Date },
-    { column: 'Updated At', type: Date },
-    { column: 'Updated By', type: String },
-    { column: 'Created By Name', type: String },
-    { column: 'Updated By Name', type: String }
-];
+    db.query(sql, async (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+        }
 
-// Map database results to match the schema
-const dynamicData = data.map(report => [
-    { value: report.block_name },
-    { value: report.PreviousMonthCasesRecieved || 0 },
-    { value: report.CurrentMonthCasesRecieved || 0 },
-    { value: report.TotalCasesRecieved || 0 },
-    { value: report.PreviousMonthCasesResolved || 0 },
-    { value: report.CurrentMonthCasesResolved || 0 },
-    { value: report.TotalCasesResolved || 0 },
-    { value: report.CasesWithFir || 0 },
-    { value: report.MedicalAssistance || 0 },
-    { value: report.ShelterHomeAssistance || 0 },
-    { value: report.DIRAssistance || 0 },
-    { value: report.Other || 0 },
-    { value: report.PromotionalActivitiesNumber || 0 },
-    { value: report.NumberOfMeetingsOfDistrictMahilaSamadhanSamiti || 0 },
-    { value: report.Comment || '' },
-    { value: report.createdBy || '' },
-    { value: new Date(report.createdAt) },
-    { value: new Date(report.updatedAt) },
-    { value: report.updatedBy || '' },
-    { value: report.createdByName || '' },
-    { value: report.updatedByName || '' }
-]);
-    
-                // Combine static rows and dynamic data
-                const excelData = [...staticRows, ...dynamicData];
-    
-                // File path for the generated Excel file
-                const filePath = path.join(__dirname, 'monthly_progress_report.xlsx');
+        try {
+             // Ensure the 'downloads' directory exists
+             const downloadDir = path.join(__dirname, "../downloads");
+             if (!fs.existsSync(downloadDir)) {
+                 fs.mkdirSync(downloadDir, { recursive: true }); // Create the directory if it doesn't exist
+             }
+            // Create a new workbook and worksheet
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('Monthly Progress Report');
 
-// Write the Excel file with the schema and data
-await writeXlsxFile(dynamicData, {
-    schema,
-    filePath
-});
-    
-                // Send the generated file for download
-                res.download(filePath, 'monthly_progress_report.xlsx', (downloadErr) => {
-                    if (downloadErr) {
-                        console.error(downloadErr);
-                        return res.status(500).json(responseHandler("Failure", 500, "Error sending the file"));
-                    }
-    
-                    // Optionally delete the file after sending
-                    fs.unlink(filePath, (unlinkErr) => {
-                        if (unlinkErr) {
-                            console.error('Error deleting the file:', unlinkErr);
-                        }
-                    });
-                });
-    
-            } catch (error) {
-                console.error(error);
-                res.status(500).json(responseHandler("Failure", 500, "Error generating report"));
-            }
-        });
+            // Define headers
+            worksheet.columns = [
+                // { header: "Start Month", key: "StartMonth", width: 20 },
+                { header: "जिला/ब्लॉक", key: "block_name", width: 20 },
+                // { header: "End Month", key: "EndMonth", width: 20 },
+                { header: "पिछले माह (`अप्रैल`-`EndMonth`) तक प्राप्त प्रकरण", key: "EndMonth", width: 20 },
+                { header: "Start Year", key: "StartYear", width: 15 },
+                { header: "End Year", key: "EndYear", width: 15 },
+                { header: "Block", key: "Block", width: 10 },
+                { header: "Previous Month Cases Received", key: "PreviousMonthCasesRecieved", width: 30 },
+                { header: "Current Month Cases Received", key: "CurrentMonthCasesRecieved", width: 30 },
+                { header: "Total Cases Received", key: "TotalCasesRecieved", width: 25 },
+                { header: "Previous Month Cases Resolved", key: "PreviousMonthCasesResolved", width: 30 },
+                { header: "Current Month Cases Resolved", key: "CurrentMonthCasesResolved", width: 30 },
+                { header: "Total Cases Resolved", key: "TotalCasesResolved", width: 25 },
+                { header: "Cases with FIR", key: "CasesWithFir", width: 15 },
+                { header: "Medical Assistance", key: "MedicalAssistance", width: 20 },
+                { header: "Shelter Home Assistance", key: "ShelterHomeAssistance", width: 25 },
+                { header: "DIR Assistance", key: "DIRAssistance", width: 15 },
+                { header: "Other", key: "Other", width: 20 },
+                { header: "Promotional Activities Number", key: "PromotionalActivitiesNumber", width: 30 },
+                { header: "Number of Meetings of District Mahila Samadhan Samiti", key: "NumberOfMeetingsOfDistrictMahilaSamadhanSamiti", width: 50 },
+                { header: "Comment", key: "Comment", width: 30 },
+                { header: "Created By", key: "createdByName", width: 25 },
+                { header: "Updated By", key: "updatedByName", width: 25 },
+                { header: "Block Name", key: "block_name", width: 25 },
+            ];
+
+            // Add rows to worksheet
+            worksheet.addRows(data);
+
+            // Write to file
+            const outputPath = path.join(__dirname, "../downloads/Monthly_Progress_Report.xlsx");
+            await workbook.xlsx.writeFile(outputPath);
+
+            // Send the file as a response for download
+            res.download(outputPath, "Monthly_Progress_Report.xlsx", (err) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json(responseHandler("Failure", 500, "Error in downloading file"));
+                }
+            });
+        } catch (err) {
+            console.error(err);
+            // return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+        }
     });
-    
+});
 
 module.exports = router;
