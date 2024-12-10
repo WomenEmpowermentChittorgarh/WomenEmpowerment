@@ -79,7 +79,8 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
     });
 });
 
-router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
+// router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
+    router.get('/downloadMonthlyReport', async (req, res) => {
     const sql = 'SELECT * FROM monthly_progress_report';
 
     db.query(sql, async (err, data) => {
