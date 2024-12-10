@@ -81,70 +81,114 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
 
 // router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
     router.get('/downloadMonthlyReport', async (req, res) => {
-    const sql = 'SELECT * FROM monthly_progress_report';
-
-    db.query(sql, async (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
-        }
-
-        try {
-            // Get dynamic start month, end month, start year, and end year
-            const startMonth = req.query.startMonth || 'January';
-            const endMonth = req.query.endMonth || 'March';
-            const startYear = req.query.startYear || '2024';
-            const endYear = req.query.endYear || '2025';
-
-            // Static Rows (1st to 6th rows)
-            const staticRows = [
-                [{ value: 'कार्यालय महिला अधिकारिता, चित्तौड़गढ़' }],    // Row 1
-                [{ value: 'महिला सुरक्षा एवं सलाह केन्द्र' }],            // Row 2
-                [{ value: 'मासिक प्रगति रिपोर्ट' }],                      // Row 3
-                [{ value: `रिपोटिंग माह ${startMonth}-${endMonth} तक (वित्तीय वर्ष ${startYear}-${endYear})` }], // Row 4
-                [{ value: '' }],                                           // Row 5 (Placeholder)
-                [{ value: '' }]                                            // Row 6 (Placeholder)
-            ];
-
-            // Map database results to rows (7th to 15th rows)
-            const dynamicData = data.map(report => ([
-                { value: report.block_name },
-                { value: report.PreviousMonthCasesRecieved },
-                { value: report.CurrentMonthCasesRecieved },
-                { value: report.TotalCasesRecieved },
-                { value: report.PreviousMonthCasesResolved },
-                { value: report.CurrentMonthCasesResolved },
-                { value: report.TotalCasesResolved },
-                { value: report.CasesWithFir },
-                { value: report.MedicalAssistance },
-                { value: report.ShelterHomeAssistance },
-                { value: report.DIRAssistance },
-                { value: report.Other },
-                { value: report.PromotionalActivitiesNumber },
-                { value: report.NumberOfMeetingsOfDistrictMahilaSamadhanSamiti },
-                { value: report.Comment },
-                { value: report.createdBy },
-                { value: new Date(report.createdAt).toISOString() },
-                { value: new Date(report.updatedAt).toISOString() },
-                { value: report.updatedBy },
-                { value: report.createdByName },
-                { value: report.updatedByName }
-            ]));
-
-            // Combine static rows and dynamic data
-            const excelData = [...staticRows, ...dynamicData];
-
-            // Generate the Excel file
-            const filePath = path.join(__dirname, 'monthly_progress_report.xlsx');
-            await writeXlsxFile(excelData, { filePath });
-
-            // Send the generated file for download
-            res.download(filePath);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json(responseHandler("Failure", 500, "Error generating report"));
-        }
+        const sql = 'SELECT * FROM monthly_progress_report';
+    
+        db.query(sql, async (err, data) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+            }
+    
+            try {
+                // Get dynamic start month, end month, start year, and end year
+                const startMonth = req.query.startMonth || 'January';
+                const endMonth = req.query.endMonth || 'March';
+                const startYear = req.query.startYear || '2024';
+                const endYear = req.query.endYear || '2025';
+    
+                // Static Rows (1st to 6th rows)
+                const staticRows = [
+                    [{ value: 'कार्यालय महिला अधिकारिता, चित्तौड़गढ़' }],    // Row 1
+                    [{ value: 'महिला सुरक्षा एवं सलाह केन्द्र' }],            // Row 2
+                    [{ value: 'मासिक प्रगति रिपोर्ट' }],                      // Row 3
+                    [{ value: `रिपोटिंग माह ${startMonth}-${endMonth} तक (वित्तीय वर्ष ${startYear}-${endYear})` }], // Row 4
+                    [{ value: '' }],                                           // Row 5 (Placeholder)
+                    [{ value: '' }]                                            // Row 6 (Placeholder)
+                ];
+    
+                // Define schema for the dynamic data
+                const schema = [
+                    { column: 'Block Name', type: String },
+                    { column: 'Previous Month Cases Received', type: Number },
+                    { column: 'Current Month Cases Received', type: Number },
+                    { column: 'Total Cases Received', type: Number },
+                    { column: 'Previous Month Cases Resolved', type: Number },
+                    { column: 'Current Month Cases Resolved', type: Number },
+                    { column: 'Total Cases Resolved', type: Number },
+                    { column: 'Cases With FIR', type: Number },
+                    { column: 'Medical Assistance', type: Number },
+                    { column: 'Shelter Home Assistance', type: Number },
+                    { column: 'DIR Assistance', type: Number },
+                    { column: 'Other', type: Number },
+                    { column: 'Promotional Activities Number', type: Number },
+                    { column: 'Number of Meetings', type: Number },
+                    { column: 'Comment', type: String },
+                    { column: 'Created By', type: String },
+                    { column: 'Created At', type: Date },
+                    { column: 'Updated At', type: Date },
+                    { column: 'Updated By', type: String },
+                    { column: 'Created By Name', type: String },
+                    { column: 'Updated By Name', type: String }
+                ];
+    
+                // Map database results to rows (7th to 15th rows)
+                const dynamicData = data.map(report => [
+                    report.block_name,
+                    report.PreviousMonthCasesRecieved,
+                    report.CurrentMonthCasesRecieved,
+                    report.TotalCasesRecieved,
+                    report.PreviousMonthCasesResolved,
+                    report.CurrentMonthCasesResolved,
+                    report.TotalCasesResolved,
+                    report.CasesWithFir,
+                    report.MedicalAssistance,
+                    report.ShelterHomeAssistance,
+                    report.DIRAssistance,
+                    report.Other,
+                    report.PromotionalActivitiesNumber,
+                    report.NumberOfMeetingsOfDistrictMahilaSamadhanSamiti,
+                    report.Comment,
+                    report.createdBy,
+                    new Date(report.createdAt),
+                    new Date(report.updatedAt),
+                    report.updatedBy,
+                    report.createdByName,
+                    report.updatedByName
+                ]);
+    
+                // Combine static rows and dynamic data
+                const excelData = [...staticRows, ...dynamicData];
+    
+                // File path for the generated Excel file
+                const filePath = path.join(__dirname, 'monthly_progress_report.xlsx');
+    
+                // Write the Excel file
+                await writeXlsxFile(dynamicData, {
+                    schema,
+                    filePath
+                });
+    
+                // Send the generated file for download
+                res.download(filePath, 'monthly_progress_report.xlsx', (downloadErr) => {
+                    if (downloadErr) {
+                        console.error(downloadErr);
+                        return res.status(500).json(responseHandler("Failure", 500, "Error sending the file"));
+                    }
+    
+                    // Optionally delete the file after sending
+                    fs.unlink(filePath, (unlinkErr) => {
+                        if (unlinkErr) {
+                            console.error('Error deleting the file:', unlinkErr);
+                        }
+                    });
+                });
+    
+            } catch (error) {
+                console.error(error);
+                res.status(500).json(responseHandler("Failure", 500, "Error generating report"));
+            }
+        });
     });
-});
+    
 
 module.exports = router;
