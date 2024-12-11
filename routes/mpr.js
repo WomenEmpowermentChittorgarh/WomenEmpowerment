@@ -140,10 +140,10 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
             workbook.xlsx.readFile('../mprformat/format.xlsx')
             .then(function() {
                 var worksheet = workbook.getWorksheet(1);
-                var row = worksheet.getRow(5);
-                row.getCell(1).value = 5; // A5's value set to 5
+                var row = worksheet.getRow(7);
+                row.getCell(2).value = 7; // A5's value set to 5
                 row.commit();
-                return workbook.xlsx.writeFile('new.xlsx');
+                return workbook.xlsx.writeFile('format.xlsx');
             })
 
             const outputPath = path.join(__dirname, "../mprformat/format.xlsx");
