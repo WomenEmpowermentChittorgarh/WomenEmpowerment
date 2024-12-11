@@ -5,6 +5,7 @@ const responseHandler = require('../utils/responseHandler');
 const ExcelJS = require('exceljs');
 const path = require('path');
 const fs = require('fs');
+const zz = require('write-excel-file')
 
 const router = express.Router();
 
@@ -78,72 +79,141 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
     });
 });
 
-router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
-    const sql = 'SELECT * FROM monthly_progress_report';
+// router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
+    router.get('/downloadMonthlyReport', async (req, res) => {
+    // const sql = 'SELECT * FROM monthly_progress_report';
     
-    db.query(sql, async (err, data) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+    // db.query(sql, async (err, data) => {
+    //     if (err) {
+    //         console.error(err);
+    //         return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+    //     }
+
+    //     try {
+    //          // Ensure the 'downloads' directory exists
+    //          const downloadDir = path.join(__dirname, "../downloads");
+    //          if (!fs.existsSync(downloadDir)) {
+    //              fs.mkdirSync(downloadDir, { recursive: true }); // Create the directory if it doesn't exist
+    //          }
+    //         // Create a new workbook and worksheet
+    //         const workbook = new ExcelJS.Workbook();
+    //         const worksheet = workbook.addWorksheet('Monthly Progress Report');
+
+    //         // Define headers
+    //         worksheet.columns = [
+    //             // { header: "Start Month", key: "StartMonth", width: 20 },
+    //             { header: "जिला/ब्लॉक", key: "block_name", width: 20 },
+    //             // { header: "End Month", key: "EndMonth", width: 20 },
+    //             { header: "पिछले माह (`अप्रैल`-`EndMonth`) तक प्राप्त प्रकरण", key: "EndMonth", width: 20 },
+    //             { header: "Start Year", key: "StartYear", width: 15 },
+    //             { header: "End Year", key: "EndYear", width: 15 },
+    //             { header: "Block", key: "Block", width: 10 },
+    //             { header: "Previous Month Cases Received", key: "PreviousMonthCasesRecieved", width: 30 },
+    //             { header: "Current Month Cases Received", key: "CurrentMonthCasesRecieved", width: 30 },
+    //             { header: "Total Cases Received", key: "TotalCasesRecieved", width: 25 },
+    //             { header: "Previous Month Cases Resolved", key: "PreviousMonthCasesResolved", width: 30 },
+    //             { header: "Current Month Cases Resolved", key: "CurrentMonthCasesResolved", width: 30 },
+    //             { header: "Total Cases Resolved", key: "TotalCasesResolved", width: 25 },
+    //             { header: "Cases with FIR", key: "CasesWithFir", width: 15 },
+    //             { header: "Medical Assistance", key: "MedicalAssistance", width: 20 },
+    //             { header: "Shelter Home Assistance", key: "ShelterHomeAssistance", width: 25 },
+    //             { header: "DIR Assistance", key: "DIRAssistance", width: 15 },
+    //             { header: "Other", key: "Other", width: 20 },
+    //             { header: "Promotional Activities Number", key: "PromotionalActivitiesNumber", width: 30 },
+    //             { header: "Number of Meetings of District Mahila Samadhan Samiti", key: "NumberOfMeetingsOfDistrictMahilaSamadhanSamiti", width: 50 },
+    //             { header: "Comment", key: "Comment", width: 30 },
+    //             { header: "Created By", key: "createdByName", width: 25 },
+    //             { header: "Updated By", key: "updatedByName", width: 25 },
+    //             { header: "Block Name", key: "block_name", width: 25 },
+    //         ];
+
+    //         // Add rows to worksheet
+    //         worksheet.addRows(data);
+
+    //         // Write to file
+    //         const outputPath = path.join(__dirname, "../downloads/Monthly_Progress_Report.xlsx");
+    //         await workbook.xlsx.writeFile(outputPath);
+
+    //         // Send the file as a response for download
+    //         res.download(outputPath, "Monthly_Progress_Report.xlsx", (err) => {
+    //             if (err) {
+    //                 console.error(err);
+    //                 return res.status(500).json(responseHandler("Failure", 500, "Error in downloading file"));
+    //             }
+    //         });
+    //     } catch (err) {
+    //         console.error(err);
+    //         // return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+    //     }
+    // });
+    const HEADER_ROW = [
+        {
+          value: 'Name',
+          fontWeight: 'bold'
+        },
+        {
+          value: 'Date of Birth',
+          fontWeight: 'bold'
+        },
+        {
+          value: 'Cost',
+          fontWeight: 'bold'
+        },
+        {
+          value: 'Paid',
+          fontWeight: 'bold'
         }
-
-        try {
-             // Ensure the 'downloads' directory exists
-             const downloadDir = path.join(__dirname, "../downloads");
-             if (!fs.existsSync(downloadDir)) {
-                 fs.mkdirSync(downloadDir, { recursive: true }); // Create the directory if it doesn't exist
-             }
-            // Create a new workbook and worksheet
-            const workbook = new ExcelJS.Workbook();
-            const worksheet = workbook.addWorksheet('Monthly Progress Report');
-
-            // Define headers
-            worksheet.columns = [
-                // { header: "Start Month", key: "StartMonth", width: 20 },
-                { header: "जिला/ब्लॉक", key: "block_name", width: 20 },
-                // { header: "End Month", key: "EndMonth", width: 20 },
-                { header: "पिछले माह (`अप्रैल`-`EndMonth`) तक प्राप्त प्रकरण", key: "EndMonth", width: 20 },
-                { header: "Start Year", key: "StartYear", width: 15 },
-                { header: "End Year", key: "EndYear", width: 15 },
-                { header: "Block", key: "Block", width: 10 },
-                { header: "Previous Month Cases Received", key: "PreviousMonthCasesRecieved", width: 30 },
-                { header: "Current Month Cases Received", key: "CurrentMonthCasesRecieved", width: 30 },
-                { header: "Total Cases Received", key: "TotalCasesRecieved", width: 25 },
-                { header: "Previous Month Cases Resolved", key: "PreviousMonthCasesResolved", width: 30 },
-                { header: "Current Month Cases Resolved", key: "CurrentMonthCasesResolved", width: 30 },
-                { header: "Total Cases Resolved", key: "TotalCasesResolved", width: 25 },
-                { header: "Cases with FIR", key: "CasesWithFir", width: 15 },
-                { header: "Medical Assistance", key: "MedicalAssistance", width: 20 },
-                { header: "Shelter Home Assistance", key: "ShelterHomeAssistance", width: 25 },
-                { header: "DIR Assistance", key: "DIRAssistance", width: 15 },
-                { header: "Other", key: "Other", width: 20 },
-                { header: "Promotional Activities Number", key: "PromotionalActivitiesNumber", width: 30 },
-                { header: "Number of Meetings of District Mahila Samadhan Samiti", key: "NumberOfMeetingsOfDistrictMahilaSamadhanSamiti", width: 50 },
-                { header: "Comment", key: "Comment", width: 30 },
-                { header: "Created By", key: "createdByName", width: 25 },
-                { header: "Updated By", key: "updatedByName", width: 25 },
-                { header: "Block Name", key: "block_name", width: 25 },
-            ];
-
-            // Add rows to worksheet
-            worksheet.addRows(data);
-
-            // Write to file
-            const outputPath = path.join(__dirname, "../downloads/Monthly_Progress_Report.xlsx");
-            await workbook.xlsx.writeFile(outputPath);
-
-            // Send the file as a response for download
-            res.download(outputPath, "Monthly_Progress_Report.xlsx", (err) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json(responseHandler("Failure", 500, "Error in downloading file"));
-                }
-            });
-        } catch (err) {
-            console.error(err);
-            // return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+      ]
+      
+      const DATA_ROW_1 = [
+        // "Name"
+        {
+          type: String,
+          value: 'John Smith'
+        },
+      
+        // "Date of Birth"
+        {
+          type: Date,
+          value: new Date(),
+          format: 'mm/dd/yyyy'
+        },
+      
+        // "Cost"
+        {
+          type: Number,
+          value: 1800
+        },
+      
+        // "Paid"
+        {
+          type: Boolean,
+          value: true
         }
-    });
+      ]
+      
+      const data = [
+        HEADER_ROW,
+        DATA_ROW_1,
+      ]
+
+      const filePath = path.join(__dirname, 'file.xlsx');
+
+      await writeXlsxFile(data, {
+        columns, // (optional) column widths, etc.
+        fileName: 'file.xlsx'
+      })
+
+      // Set headers to prompt download
+        res.download(filePath, 'file.xlsx', (err) => {
+            if (err) {
+            console.error('Error sending the file:', err);
+            res.status(500).send('Error downloading the file');
+            } else {
+            // Delete the file after download
+            fs.unlinkSync(filePath);
+            }
+        });
 });
 
 module.exports = router;
