@@ -148,7 +148,7 @@ router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
 });
 
 // Route to generate and download an Excel file
-app.get('/download-excel', async (req, res) => {
+router.get('/download-excel', async (req, res) => {
     try {
       const HEADER_ROW = [
         { value: 'Name', fontWeight: 'bold' },
