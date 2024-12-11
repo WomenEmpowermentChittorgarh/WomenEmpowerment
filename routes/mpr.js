@@ -97,7 +97,7 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
              }
             // Create a new workbook and worksheet
             const workbook = new ExcelJS.Workbook();
-            const worksheet = workbook.addWorksheet('Monthly Progress Report');
+            // const worksheet = workbook.addWorksheet('Monthly Progress Report');
 
             // Define headers
             // worksheet.columns = [
@@ -129,13 +129,24 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
 
             // // Add rows to worksheet
             // worksheet.addRows(data);
-
-            worksheet.addRow(['ID', 'Name', 'Age']);
-            worksheet.addRow([1, 'John Doe', 25]);
+            //  worksheet.addRow(['कार्यालय महिला अधिकारिता, चित्तौड़गढ़'])
+            // worksheet.addRow(['ID', 'Name', 'Age']);
+            // worksheet.addRow([1, 'John Doe', 25]);
 
             // Write to file
-            const outputPath = path.join(__dirname, "../downloads/Monthly_Progress_Report.xlsx");
-            await workbook.xlsx.writeFile(outputPath);
+            // const outputPath = path.join(__dirname, "../downloads/Monthly_Progress_Report.xlsx");
+            // await workbook.xlsx.writeFile(outputPath);
+
+            workbook.xlsx.readFile('../mprformat/format.xlsx')
+            .then(function() {
+                var worksheet = workbook.getWorksheet(1);
+                var row = worksheet.getRow(5);
+                row.getCell(1).value = 5; // A5's value set to 5
+                row.commit();
+                return workbook.xlsx.writeFile('new.xlsx');
+            })
+
+            const outputPath = path.join(__dirname, "../mprformat/format.xlsx");
 
             // Send the file as a response for download
             res.download(outputPath, "Monthly_Progress_Report.xlsx", (err) => {
