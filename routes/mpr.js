@@ -80,76 +80,121 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
 });
 
 // router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
-    router.get('/downloadMonthlyReport', async (req, res) => {
+router.get('/downloadMonthlyReport', async (req, res) => {
     const sql = 'SELECT * FROM monthly_progress_report';
-    
+
     db.query(sql, async (err, data) => {
         if (err) {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
 
+        console.log(data[0].StartYear);
+        
+
         try {
-             // Ensure the 'downloads' directory exists
-             const downloadDir = path.join(__dirname, "../mprformat");
-             if (!fs.existsSync(downloadDir)) {
-                 fs.mkdirSync(downloadDir, { recursive: true }); // Create the directory if it doesn't exist
-             }
+            // Ensure the 'downloads' directory exists
+            const downloadDir = path.join(__dirname, "../downloads");
+            if (!fs.existsSync(downloadDir)) {
+                fs.mkdirSync(downloadDir, { recursive: true }); // Create the directory if it doesn't exist
+            }
             // Create a new workbook and worksheet
             const workbook = new ExcelJS.Workbook();
-            // const worksheet = workbook.addWorksheet('Monthly Progress Report');
+            const worksheet = workbook.addWorksheet('Monthly Progress Report');
 
-            // Define headers
-            // worksheet.columns = [
-            //     // { header: "Start Month", key: "StartMonth", width: 20 },
-            //     { header: "जिला/ब्लॉक", key: "block_name", width: 20 },
-            //     // { header: "End Month", key: "EndMonth", width: 20 },
-            //     { header: "पिछले माह (`अप्रैल`-`EndMonth`) तक प्राप्त प्रकरण", key: "EndMonth", width: 20 },
-            //     { header: "Start Year", key: "StartYear", width: 15 },
-            //     { header: "End Year", key: "EndYear", width: 15 },
-            //     { header: "Block", key: "Block", width: 10 },
-            //     { header: "Previous Month Cases Received", key: "PreviousMonthCasesRecieved", width: 30 },
-            //     { header: "Current Month Cases Received", key: "CurrentMonthCasesRecieved", width: 30 },
-            //     { header: "Total Cases Received", key: "TotalCasesRecieved", width: 25 },
-            //     { header: "Previous Month Cases Resolved", key: "PreviousMonthCasesResolved", width: 30 },
-            //     { header: "Current Month Cases Resolved", key: "CurrentMonthCasesResolved", width: 30 },
-            //     { header: "Total Cases Resolved", key: "TotalCasesResolved", width: 25 },
-            //     { header: "Cases with FIR", key: "CasesWithFir", width: 15 },
-            //     { header: "Medical Assistance", key: "MedicalAssistance", width: 20 },
-            //     { header: "Shelter Home Assistance", key: "ShelterHomeAssistance", width: 25 },
-            //     { header: "DIR Assistance", key: "DIRAssistance", width: 15 },
-            //     { header: "Other", key: "Other", width: 20 },
-            //     { header: "Promotional Activities Number", key: "PromotionalActivitiesNumber", width: 30 },
-            //     { header: "Number of Meetings of District Mahila Samadhan Samiti", key: "NumberOfMeetingsOfDistrictMahilaSamadhanSamiti", width: 50 },
-            //     { header: "Comment", key: "Comment", width: 30 },
-            //     { header: "Created By", key: "createdByName", width: 25 },
-            //     { header: "Updated By", key: "updatedByName", width: 25 },
-            //     { header: "Block Name", key: "block_name", width: 25 },
-            // ];
+            const row = worksheet.addRow(['कार्यालय महिला अधिकारिता, चित्तौड़गढ़']);
+            worksheet.mergeCells(row.number, 1, row.number, 15);
+            const mergedCell = worksheet.getCell(row.number, 1); // Get the first cell of the merged range
+            mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
+            mergedCell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
 
-            // // Add rows to worksheet
-            // worksheet.addRows(data);
-            //  worksheet.addRow(['कार्यालय महिला अधिकारिता, चित्तौड़गढ़'])
+            const row2 = worksheet.addRow(['महिला सुरक्षा एवं सलाह केन्द्र']);
+            worksheet.mergeCells(row2.number, 1, row2.number, 15);
+            const mergedCell2 = worksheet.getCell(row2.number, 1); // Get the first cell of the merged range
+            mergedCell2.alignment = { horizontal: 'center', vertical: 'middle' };
+            mergedCell2.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+
+            const row3 = worksheet.addRow(['मासिक प्रगति रिपोर्ट']);
+            worksheet.mergeCells(row3.number, 1, row3.number, 15);
+            const mergedCell3 = worksheet.getCell(row3.number, 1); // Get the first cell of the merged range
+            mergedCell3.alignment = { horizontal: 'center', vertical: 'middle' };
+            mergedCell3.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+
+            const row4 = worksheet.addRow([`रिपोटिंग माह ${data[0].StartMonth}-${data[0].EndMonth} तक ( वित्तीय वर्ष ${data[0].StartYear}-${data[0].EndYear})`]);
+            worksheet.mergeCells(row4.number, 1, row4.number, 15);
+            const mergedCell4 = worksheet.getCell(row4.number, 1); // Get the first cell of the merged range
+            mergedCell4.alignment = { horizontal: 'center', vertical: 'middle' };
+            mergedCell4.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+
+            const row5 = worksheet.addRow([`जिला/ब्लॉक`,`पिछले माह (${data[0].StartMonth}-${data[0].EndMonth}) तक प्राप्त प्रकरण`,`इस माह ${data[0].EndMonth} में प्राप्त प्रकरण`,`कुल प्राप्त प्रकरण (1+2)`,`पिछले माह (${data[0].StartMonth}-${data[0].EndMonth}) तक निस्तारित प्रकरण`,`इस माह ${data[0].EndMonth} में निस्तारित प्रकरण`,`कुल निस्तारित प्रकरण (4+5)`,`प्रकरण जिसमें पुलिस मे FIR दर्ज करवाई गयी`,`मेडिकल मुआयना कराने में सहयोग`,`आश्रयगृह मे प्रवेश दिलाने में सहयोग`,`घरेलू घटना रिपोर्ट DIR बनाने और न्यायालय में प्रस्तुत करने में सहयोग`,`अन्य`,`प्रचार-प्रसार की गतिविधियों की संख्या`,`ज़िला महिला समाधान समिति की बैठकों की संख्या`,`टिप्पणी`]);
+            row5.alignment = { wrapText: true, horizontal: 'center', vertical: 'middle' };
+            for (let col = 1; col <= 15; col++) {
+                const cell = worksheet.getCell(row5.number, col);
+                cell.border = {
+                    top: { style: 'thin' },
+                    left: { style: 'thin' },
+                    bottom: { style: 'thin' },
+                    right: { style: 'thin' }
+                };
+            }
+
+            data.map(item=>{
+                const row = worksheet.addRow([item.block_name, item.PreviousMonthCasesRecieved, item.CurrentMonthCasesRecieved, item.TotalCasesRecieved,item.PreviousMonthCasesResolved,item.CurrentMonthCasesResolved,item.TotalCasesResolved,item.CasesWithFir,item.MedicalAssistance,item.ShelterHomeAssistance,item.DIRAssistance,item.Other,item.PromotionalActivitiesNumber,item.NumberOfMeetingsOfDistrictMahilaSamadhanSamiti,item.Comment]);
+                row.alignment = { wrapText: true, horizontal: 'center', vertical: 'middle' };
+                for (let col = 1; col <= 15; col++) {
+                    const cell = worksheet.getCell(row.number, col);
+                    cell.border = {
+                        top: { style: 'thin' },
+                        left: { style: 'thin' },
+                        bottom: { style: 'thin' },
+                        right: { style: 'thin' }
+                    };
+                }
+            })
             // worksheet.addRow(['ID', 'Name', 'Age']);
-            // worksheet.addRow([1, 'John Doe', 25]);
+
+            worksheet.getColumn(1).width = 10; // Adjust the width for column 2 as needed
+            worksheet.getColumn(2).width = 10;
+            worksheet.getColumn(3).width = 10;
+            worksheet.getColumn(4).width = 10;
+            worksheet.getColumn(5).width = 10;
+            worksheet.getColumn(6).width = 10;
+            worksheet.getColumn(7).width = 10;
+            worksheet.getColumn(8).width = 10;
+            worksheet.getColumn(9).width = 10;
+            worksheet.getColumn(10).width = 10;
+            worksheet.getColumn(11).width = 10;
+            worksheet.getColumn(12).width = 10;
+            worksheet.getColumn(13).width = 10;
+            worksheet.getColumn(14).width = 10;
+            worksheet.getColumn(15).width = 10;
 
             // Write to file
-            // const outputPath = path.join(__dirname, "../downloads/Monthly_Progress_Report.xlsx");
-            // await workbook.xlsx.writeFile(outputPath);
-
-            workbook.xlsx.readFile('../mprformat/format.xlsx')
-            .then(function() {
-                var worksheet = workbook.getWorksheet(1);
-                var row = worksheet.getRow(7);
-                row.getCell(2).value = 7; // A5's value set to 5
-                row.commit();
-                return workbook.xlsx.writeFile('format.xlsx');
-            })
-
-            const outputPath = path.join(__dirname, "../mprformat/format.xlsx");
+            const outputPath = path.join(__dirname, "../downloads/Monthly_Progress_Report.xlsx");
+            await workbook.xlsx.writeFile(outputPath);
 
             // Send the file as a response for download
-            res.download(outputPath, "format.xlsx", (err) => {
+            res.download(outputPath, "Monthly_Progress_Report.xlsx", (err) => {
                 if (err) {
                     console.error(err);
                     return res.status(500).json(responseHandler("Failure", 500, "Error in downloading file"));
