@@ -91,7 +91,7 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
 
         try {
              // Ensure the 'downloads' directory exists
-             const downloadDir = path.join(__dirname, "../downloads");
+             const downloadDir = path.join(__dirname, "../mprformat");
              if (!fs.existsSync(downloadDir)) {
                  fs.mkdirSync(downloadDir, { recursive: true }); // Create the directory if it doesn't exist
              }
@@ -149,7 +149,7 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
             const outputPath = path.join(__dirname, "../mprformat/format.xlsx");
 
             // Send the file as a response for download
-            res.download(outputPath, "Monthly_Progress_Report.xlsx", (err) => {
+            res.download(outputPath, "format.xlsx", (err) => {
                 if (err) {
                     console.error(err);
                     return res.status(500).json(responseHandler("Failure", 500, "Error in downloading file"));
