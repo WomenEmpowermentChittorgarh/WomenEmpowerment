@@ -147,73 +147,38 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
     //     }
     // });
     const HEADER_ROW = [
-        {
-          value: 'Name',
-          fontWeight: 'bold'
-        },
-        {
-          value: 'Date of Birth',
-          fontWeight: 'bold'
-        },
-        {
-          value: 'Cost',
-          fontWeight: 'bold'
-        },
-        {
-          value: 'Paid',
-          fontWeight: 'bold'
-        }
-      ]
+        { value: 'Name', fontWeight: 'bold' },
+        { value: 'Date of Birth', fontWeight: 'bold' },
+        { value: 'Cost', fontWeight: 'bold' },
+        { value: 'Paid', fontWeight: 'bold' },
+      ];
       
       const DATA_ROW_1 = [
-        // "Name"
-        {
-          type: String,
-          value: 'John Smith'
-        },
+        { type: String, value: 'John Smith' },
+        { type: Date, value: new Date(), format: 'mm/dd/yyyy' },
+        { type: Number, value: 1800 },
+        { type: Boolean, value: true },
+      ];
       
-        // "Date of Birth"
-        {
-          type: Date,
-          value: new Date(),
-          format: 'mm/dd/yyyy'
-        },
-      
-        // "Cost"
-        {
-          type: Number,
-          value: 1800
-        },
-      
-        // "Paid"
-        {
-          type: Boolean,
-          value: true
-        }
-      ]
-      
-      const data = [
-        HEADER_ROW,
-        DATA_ROW_1,
-      ]
+      const data = [HEADER_ROW, DATA_ROW_1];
 
       const filePath = path.join(__dirname, 'file.xlsx');
 
-      await writeXlsxFile(data, {
-        columns, // (optional) column widths, etc.
-        fileName: 'file.xlsx'
-      })
+    // Generate the Excel file
+    await writeXlsxFile(data, {
+      filePath: filePath,
+    });
 
       // Set headers to prompt download
-        res.download(filePath, 'file.xlsx', (err) => {
-            if (err) {
-            console.error('Error sending the file:', err);
-            res.status(500).send('Error downloading the file');
-            } else {
-            // Delete the file after download
-            fs.unlinkSync(filePath);
-            }
-        });
+      res.download(filePath, 'file.xlsx', (err) => {
+        if (err) {
+          console.error('Error sending the file:', err);
+          res.status(500).send('Error downloading the file');
+        } else {
+          // Delete the file after download
+          fs.unlinkSync(filePath);
+        }
+      });
 });
 
 module.exports = router;
