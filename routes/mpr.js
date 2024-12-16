@@ -210,7 +210,6 @@ router.get('/downloadMonthlyReport', async (req, res) => {
                 }
             });
         } catch (err) {
-            console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
     });
