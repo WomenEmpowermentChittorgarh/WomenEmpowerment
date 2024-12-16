@@ -95,8 +95,6 @@ router.get('/downloadMonthlyReport', async (req, res) => {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
-
-        console.log(data[0].StartYear);
         
 
         try {
@@ -209,7 +207,7 @@ router.get('/downloadMonthlyReport', async (req, res) => {
             });
         } catch (err) {
             console.error(err);
-            // return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
     });
 });
