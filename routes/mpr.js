@@ -81,9 +81,16 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
 
 // router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
 router.get('/downloadMonthlyReport', async (req, res) => {
-    const sql = 'SELECT * FROM monthly_progress_report';
 
-    db.query(sql, async (err, data) => {
+    const { start_month, end_month, start_year, end_year, userId } = req.params.id;
+
+    const sql = 'SELECT * FROM monthly_progress_report WHERE StartMonth =? AND EndMonth=? AND StartYear=? AND EndYear=? AND createdBy=?';
+
+    const values = [
+        start_month, end_month, start_year, end_year, userId
+    ]
+
+    db.query(sql, values, async (err, data) => {
         if (err) {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
