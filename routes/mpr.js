@@ -84,6 +84,10 @@ router.get('/downloadMonthlyReport', async (req, res) => {
 
     const { start_month, end_month, start_year, end_year, userId } = req.query;
 
+    if (!start_month || !end_month || !start_year || !end_year || !userId) {
+        return res.status(400).json(responseHandler("Bad Request", 400, "Missing required query parameters"));
+    }
+
     const sql = 'SELECT * FROM monthly_progress_report WHERE StartMonth =? AND EndMonth=? AND StartYear=? AND EndYear=? AND createdBy=?';
 
     const values = [

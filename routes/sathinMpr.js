@@ -78,18 +78,18 @@ router.post('/save-sathin_mpr', VerifyUserToken, (req, res) => {
 });
 
 router.get('/', VerifyUserToken, (req, res) => {
-    const { StartMonth, EndMonth, StartYear, EndYear } = req.query;
+    const { Month, Year, userId } = req.query;
 
-    if (!StartMonth || !EndMonth || !StartYear || !EndYear) {
+    if (!Month || !Year || !userId) {
         return res.status(400).json(responseHandler("Bad Request", 400, "Missing required query parameters"));
     }
 
     const sql = `
         SELECT * FROM sathin_mpr
-        WHERE month BETWEEN ? AND ? AND year BETWEEN ? AND ?
+        WHERE month=? AND year=? AND createdBy=?
     `;
 
-    db.query(sql, [StartMonth, EndMonth, StartYear, EndYear], (err, results) => {
+    db.query(sql, [Month, Year, userId], (err, results) => {
         if (err) {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Database error during fetch"));
