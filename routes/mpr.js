@@ -80,7 +80,7 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
 });
 
 // router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
-router.get('/downloadMonthlyReport', async (req, res) => {
+router.get('/downloadMonthlyReport/:start_month/:end_month/:start_year/:end_year/:userId', async (req, res) => {
 
     const { start_month, end_month, start_year, end_year, userId } = req.params.id;
 
