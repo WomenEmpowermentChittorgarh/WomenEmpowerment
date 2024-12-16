@@ -92,10 +92,6 @@ router.get('/downloadMonthlyReport', async (req, res) => {
 
     db.query(sql, values, async (err, data) => {
         
-        if (data && data.length > 0 && data[0]) {
-            return res.status(500).json(responseHandler("Failure", 500, "No Data found"));
-        } 
-        
         if (err) {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
