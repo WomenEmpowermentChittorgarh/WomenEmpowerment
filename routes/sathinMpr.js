@@ -80,7 +80,8 @@ router.post('/save-sathin_mpr', VerifyUserToken, (req, res) => {
     }
 });
 
-router.get('/', VerifyUserToken, (req, res) => {
+// router.get('/', VerifyUserToken, (req, res) => {
+router.get('/', (req, res) => {
     const { Month, Year, userId } = req.query;
 
     if (!Month || !Year || !userId) {
