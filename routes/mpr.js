@@ -5,7 +5,6 @@ const responseHandler = require('../utils/responseHandler');
 const ExcelJS = require('exceljs');
 const path = require('path');
 const fs = require('fs');
-const writeXlsxFile = require('write-excel-file')
 
 const router = express.Router();
 
