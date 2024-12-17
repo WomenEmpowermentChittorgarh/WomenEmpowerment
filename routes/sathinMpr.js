@@ -113,12 +113,12 @@ router.get('/', (req, res) => {
             const worksheet = workbook.addWorksheet('Sathin MPR');
 
             const row = worksheet.addRow(['प्रत्येक माह की 05 तारीख तक साथिन प्रकोष्ठ की ई-मेल आईडी पर प्रेषित की जाये।']);
-            worksheet.mergeCells(row.number, 1, row.number, 15);
+            worksheet.mergeCells(row.number, 1, row.number, 12);
             const mergedCell = worksheet.getCell(row.number, 1); // Get the first cell of the merged range
             mergedCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
             const row2 = worksheet.addRow([`जिले का नाम चित्तौड़गढ़ साथिन की भौतिक प्रगति वित्तीय वर्ष ${results[0].year} माह ${results[0].month}`]);
-            worksheet.mergeCells(row2.number, 1, row2.number, 15);
+            worksheet.mergeCells(row2.number, 1, row2.number, 12);
             const mergedCell2 = worksheet.getCell(row2.number, 1); // Get the first cell of the merged range
             mergedCell2.alignment = { horizontal: 'center', vertical: 'middle' };
             mergedCell2.border = {
@@ -130,7 +130,7 @@ router.get('/', (req, res) => {
 
             const row5 = worksheet.addRow([`क. सं.`,`स्वीकृत साथिनों की कुल संख्या`,`कुल कार्यरत साथिन`,`सामान्य`,`एस.सी.एस.पी`,`टी.एस.पी`,`रिक्त पद`,`मानदेय भुगतान का माह अन्सार`,`नवचयनित साथिनों की संख्या`,`आधारभूत प्रशिक्षण प्राप्त नवचयनित साथिनों की संख्या`,`आधारभूत प्रशिक्षण प्राप्त नहीं ww करने वाली नवचयनित साथिनों की संख्या`,`विशेष विवरण`]);
             row5.alignment = { wrapText: true, horizontal: 'center', vertical: 'middle' };
-            for (let col = 1; col <= 15; col++) {
+            for (let col = 1; col <= 12; col++) {
                 const cell = worksheet.getCell(row5.number, col);
                 cell.border = {
                     top: { style: 'thin' },
@@ -144,7 +144,7 @@ router.get('/', (req, res) => {
             results.map(item=>{
                 const row = worksheet.addRow([ a, item.total_approved_sathin, item.total_working_sathin, item.general,item.scsp,item.tsp,item.vacant_post,item.monthly_payment,item.newly_selected_sathin,item.newly_selected_sathin_basic_training,item.newly_selected_sathin_no_training,item.specific_description]);
                 row.alignment = { wrapText: true, horizontal: 'center', vertical: 'middle' };
-                for (let col = 1; col <= 15; col++) {
+                for (let col = 1; col <= 12; col++) {
                     const cell = worksheet.getCell(row.number, col);
                     cell.border = {
                         top: { style: 'thin' },
