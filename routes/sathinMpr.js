@@ -184,6 +184,8 @@ router.get('/', VerifyUserToken, (req, res) => {
                 }
             });
         } catch (err) {
+            console.log(err);
+            
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
     });
