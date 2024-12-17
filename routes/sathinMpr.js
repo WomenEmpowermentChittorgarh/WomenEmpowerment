@@ -138,7 +138,7 @@ router.get('/', VerifyUserToken, (req, res) => {
                     right: { style: 'thin' }
                 };
             }
-            const a =1
+            let a =1
 
             results.map(item=>{
                 const row = worksheet.addRow([ a, item.total_approved_sathin, item.total_working_sathin, item.general,item.scsp,item.tsp,item.vacant_post,item.monthly_payment,item.newly_selected_sathin,item.newly_selected_sathin_basic_training,item.newly_selected_sathin_no_training,item.specific_description]);
