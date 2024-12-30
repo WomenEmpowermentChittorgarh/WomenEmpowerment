@@ -29,6 +29,8 @@ app.use('/mpr', mprRoutes);
 app.use('/user-onboarding', otpRoutes);
 app.use('/sathin-mpr', sathinMprRoutes);
 app.use('/schemesImg', express.static(path.join(__dirname, 'schemesImg')));
+app.use('/privacy', res.sendFile(path.join(__dirname, 'privacy', 'privacy_policy.html')));
+
 
 // Error handling for unmatched routes
 app.use((req, res) => {
