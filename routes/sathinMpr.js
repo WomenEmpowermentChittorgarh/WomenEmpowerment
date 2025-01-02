@@ -173,17 +173,18 @@ router.get('/download-report', VerifyUserToken, (req, res) => {
             worksheet.getColumn(15).width = 10;
 
             // Write to file
-            var fileName = "Sathin_MPR" + month + "-" + year + ".xlsx";
+            var fileName = "Sathin_MPR-" + month + "-" + year + ".xlsx";
             const outputPath = path.join(__dirname, "../downloads/"+fileName);
             await workbook.xlsx.writeFile(outputPath);
 
             // Send the file as a response for download
-            res.download(outputPath, "Sathin_MPR.xlsx", (err) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json(responseHandler("Failure", 500, "Error in downloading file"));
-                }
-            });
+            return res.status(500).json(responseHandler("Success", 200, {filePath: outputPath}));
+            // res.download(outputPath, "Sathin_MPR.xlsx", (err) => {
+            //     if (err) {
+            //         console.error(err);
+            //         return res.status(500).json(responseHandler("Failure", 500, "Error in downloading file"));
+            //     }
+            // });
         } catch (err) {
             console.log(err);
             
