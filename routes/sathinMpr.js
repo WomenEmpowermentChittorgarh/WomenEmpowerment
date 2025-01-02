@@ -173,7 +173,8 @@ router.get('/download-report', VerifyUserToken, (req, res) => {
             worksheet.getColumn(15).width = 10;
 
             // Write to file
-            const outputPath = path.join(__dirname, "../downloads/Sathin_MPR.xlsx");
+            var fileName = "Sathin_MPR" + month + "-" + year + ".xlsx";
+            const outputPath = path.join(__dirname, "../downloads/"+fileName);
             await workbook.xlsx.writeFile(outputPath);
 
             // Send the file as a response for download
