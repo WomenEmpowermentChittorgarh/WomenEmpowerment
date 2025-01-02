@@ -30,6 +30,7 @@ app.use('/user-onboarding', otpRoutes);
 app.use('/sathin-mpr', sathinMprRoutes);
 app.use('/schemesImg', express.static(path.join(__dirname, 'schemesImg')));
 app.use('/privacy', express.static(path.join(__dirname,  'privacy')));
+app.use('/downloads', express.static(path.join(__dirname,  'downloads')));
 
 
 // Error handling for unmatched routes
