@@ -178,7 +178,7 @@ router.get('/download-report', VerifyUserToken, (req, res) => {
             await workbook.xlsx.writeFile(outputPath);
 
             // Send the file as a response for download
-            return res.status(200).json(responseHandler("Success", 200, "Report Downloaded", {filePath: "/downloads/"+fileName}));
+            return res.status(200).json(responseHandler("Success", 200, "Report Downloaded", {filePath: "downloads/"+fileName}));
             // res.download(outputPath, "Sathin_MPR.xlsx", (err) => {
             //     if (err) {
             //         console.error(err);
