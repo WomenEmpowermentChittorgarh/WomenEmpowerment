@@ -103,7 +103,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
                     return res.status(500).json(responseHandler("Failure", 500, "Error updating image path"));
                 }
 
-                res.status(201).json(responseHandler("Success", 201, "Scheme added successfully", { schemeId, document_url: relativeFilePath }));
+                res.status(201).json(responseHandler("Success", 201, "Scheme added successfully", { schemeId, document_url: 'https://sakhi-empowerment.in/'+relativeFilePath }));
             });
         });
     });
