@@ -78,10 +78,11 @@ router.post('/', upload.single('document'), (req, res) => {
     }
 
     const sql = `
-      INSERT INTO schemes 
-      (scheme_name, department_name, started_date, introduction, objective, process, apply_mode, website_url, document_url, apply_website) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    db.query(sql, [scheme_name, department_name, started_date, introduction, objective, process, apply_mode, '', apply_website], (err, data) => {
+  INSERT INTO schemes 
+  (scheme_name, department_name, started_date, introduction, objective, process, apply_mode, website_url, document_url, apply_website) 
+  VALUES (?, ?, ?, ?, ?, ?, ?, '', ?, ?)
+`;
+    db.query(sql, [scheme_name, department_name, started_date, introduction, objective, process, apply_mode, apply_website], (err, data) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
