@@ -94,7 +94,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
                 return res.status(500).json(responseHandler("Failure", 500, "Error moving image"));
             }
 
-            const relativeFilePath = path.join('schemesImg', String(schemeId), req.file.originalname);
+            let relativeFilePath = path.join('schemesImg', String(schemeId), req.file.originalname);
             relativeFilePath = relativeFilePath.replace(/ /g, '%20'); // Replace spaces with %20
             const updateSql = 'UPDATE schemes SET document_url = ? WHERE id = ?';
             db.query(updateSql, [relativeFilePath, schemeId], (updateErr) => {
