@@ -74,7 +74,7 @@ router.post('/', upload.single('document'), (req, res) => {
         webstie_url,
         apply_website } = req.body;
 
-    if (!scheme_name || !department_name || !started_date || !introduction || !objective || !process || !apply_mode || !apply_website || !req.file) {
+    if (!scheme_name || !department_name || !started_date || !introduction || !objective || !process || !apply_mode || !apply_website || !webstie_url || !req.file) {
         return res.status(400).json(responseHandler("Alert", 400, "All fields are required, including Image"));
     }
 
