@@ -64,26 +64,18 @@ const upload = multer({ storage });
 
 
 router.post('/', upload.single('document'), (req, res) => {
-    const { scheme_name,
-        department_name,
-        started_date,
-        introduction,
-        objective,
-        process,
-        apply_mode,
-        webstie_url,
-        apply_website } = req.body;
+    const { scheme_name, department_name, started_date, introduction, objective, process, apply_mode, website_url, apply_website } = req.body;
 
-    if (!scheme_name || !department_name || !started_date || !introduction || !objective || !process || !apply_mode || !apply_website || !webstie_url || !req.file) {
+    if (!scheme_name || !department_name || !started_date || !introduction || !objective || !process || !apply_mode || !apply_website || !website_url || !req.file) {
         return res.status(400).json(responseHandler("Alert", 400, "All fields are required, including Image"));
     }
 
     const sql = `
     INSERT INTO schemes 
-    (scheme_name, department_name, started_date, introduction, objective, process, apply_mode, webstie_url, document_url, apply_website) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+(scheme_name, department_name, started_date, introduction, objective, process, apply_mode, website_url, document_url, apply_website) 
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    db.query(sql, [scheme_name, department_name, started_date, introduction, objective, process, apply_mode, webstie_url, '', apply_website], (err, data) => {
+    db.query(sql, [scheme_name, department_name, started_date, introduction, objective, process, apply_mode, website_url, '', apply_website], (err, data) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
