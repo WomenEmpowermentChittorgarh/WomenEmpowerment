@@ -71,7 +71,7 @@ router.get('/getSchemeById', VerifyUserToken, (req, res) => {
 // });
 
 
-router.post('/post_scheme', upload.single('document'), (req, res) => {
+router.post('/post_scheme', VerifyUserToken, upload.single('document'), (req, res) => {
     const { scheme_name, department_name, started_date, introduction, objective, process, apply_mode, website_url, apply_website } = req.body;
 
     if (!scheme_name || !department_name || !started_date || !introduction || !objective || !process || !apply_mode || !apply_website || !website_url || !req.file) {
@@ -117,46 +117,47 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     });
 });
 
-// router.delete('/:id', (req, res) => {
-//     const schemeId = req.params.id;
+router.delete('/:id', VerifyUserToken, (req, res) => {
 
-//     // Check if the scheme exists and retrieve the image path
-//     const sqlSelect = 'SELECT Image FROM schemes WHERE id = ?';
-//     db.query(sqlSelect, [schemeId], (err, result) => {
-//         if (err) {
-//             console.error("Database error:", err);
-//             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
-//         }
+    const { schemeId } = req.query;
 
-//         if (result.length === 0) {
-//             return res.status(404).json(responseHandler("Not Found", 404, "Scheme not found"));
-//         }
+    // Check if the scheme exists and retrieve the image path
+    const sqlSelect = 'SELECT document_url FROM schemes WHERE id = ?';
+    db.query(sqlSelect, [schemeId], (err, result) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+        }
 
-//         const imagePath = result[0].Image;
+        if (result.length === 0) {
+            return res.status(404).json(responseHandler("Not Found", 404, "Scheme not found"));
+        }
 
-//         // Construct the folder path
-//         const schemeDir = path.join(__dirname, 'schemes', String(schemeId));
+        const imagePath = result[0].Image;
 
-//         // Delete the scheme data from the database
-//         const sqlDelete = 'DELETE FROM schemes WHERE id = ?';
-//         db.query(sqlDelete, [schemeId], (deleteErr) => {
-//             if (deleteErr) {
-//                 console.error("Database error during deletion:", deleteErr);
-//                 return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme from database"));
-//             }
+        // Construct the folder path
+        const schemeDir = path.join(__dirname, 'schemes', String(schemeId));
 
-//             // Delete the folder containing the image
-//             fs.rm(schemeDir, { recursive: true, force: true }, (fsErr) => {
-//                 if (fsErr) {
-//                     console.error("File system error during folder deletion:", fsErr);
-//                     return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme folder"));
-//                 }
+        // Delete the scheme data from the database
+        const sqlDelete = 'DELETE FROM schemes WHERE id = ?';
+        db.query(sqlDelete, [schemeId], (deleteErr) => {
+            if (deleteErr) {
+                console.error("Database error during deletion:", deleteErr);
+                return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme from database"));
+            }
 
-//                 res.status(200).json(responseHandler("Success", 200, "Scheme deleted successfully"));
-//             });
-//         });
-//     });
-// });
+            // Delete the folder containing the image
+            fs.rm(schemeDir, { recursive: true, force: true }, (fsErr) => {
+                if (fsErr) {
+                    console.error("File system error during folder deletion:", fsErr);
+                    return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme folder"));
+                }
+
+                res.status(200).json(responseHandler("Success", 200, "Scheme deleted successfully"));
+            });
+        });
+    });
+});
 
 // POST API to create a new scheme
 // app.post("/api/schemes", upload.single("document"), (req, res) => {
