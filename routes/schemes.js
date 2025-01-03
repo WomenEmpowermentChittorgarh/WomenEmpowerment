@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
         cb(null, tempDir);
     },
     filename: (req, file, cb) => {
-      var filename = file.originalname.replace(/ /g,"%20")
+        var filename = file.originalname.replace(/ /g, "%20")
         cb(null, `${Date.now()}-${filename}`);
     }
 });
@@ -95,6 +95,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             }
 
             const relativeFilePath = path.join('schemesImg', String(schemeId), req.file.originalname);
+            relativeFilePath = relativeFilePath.replace(/ /g, '%20'); // Replace spaces with %20
             const updateSql = 'UPDATE schemes SET document_url = ? WHERE id = ?';
             db.query(updateSql, [relativeFilePath, schemeId], (updateErr) => {
                 if (updateErr) {
@@ -162,19 +163,19 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 //       document_url,
 //       apply_website,
 //     } = req.body;
-  
+
 //     if (!req.file) {
 //       return res.status(400).json({ error: "Document file is required" });
 //     }
-  
+
 //     const fileName = req.file.filename;
 //     const website_url = `https://domainname.in/schemesImg/${fileName}`;
-  
+
 //     const sql = `
 //       INSERT INTO schemes 
 //       (scheme_name, department_name, started_date, introduction, objective, process, apply_mode, website_url, document_url, apply_website) 
 //       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-  
+
 //     db.query(
 //       sql,
 //       [
@@ -194,7 +195,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 //           console.error(err);
 //           return res.status(500).json({ error: "Failed to insert data into the database" });
 //         }
-  
+
 //         res.status(201).json({
 //           message: "Scheme created successfully",
 //           schemeId: result.insertId,
