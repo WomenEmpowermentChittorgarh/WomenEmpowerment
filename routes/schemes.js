@@ -7,6 +7,8 @@ const db = require('../db');
 const responseHandler = require('../utils/responseHandler');
 const VerifyUserToken = require('../middleware/VerifyUserToken');
 
+express.use(bodyParser.json());
+
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -25,51 +27,61 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get('/fetch-schemes', VerifyUserToken, (req, res) => {
-    const sql = 'SELECT * FROM schemes';
-    db.query(sql, (err, data) => {
-        if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
-        }
-        const schemes = data.map(row => ({
-           id: row.id,
-           scheme_name: row.scheme_name,
-           started_date: row.started_date
-       }));
-        res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { schemes }));
-    });
-});
+// router.get('/fetch-schemes', VerifyUserToken, (req, res) => {
+//     const sql = 'SELECT * FROM schemes';
+//     db.query(sql, (err, data) => {
+//         if (err) {
+//             console.error("Database error:", err);
+//             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+//         }
+//         const schemes = data.map(row => ({
+//            id: row.id,
+//            scheme_name: row.scheme_name,
+//            started_date: row.started_date
+//        }));
+//         res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { schemes }));
+//     });
+// });
 
-router.get('/getSchemeById', VerifyUserToken, (req, res) => {
-  const { id } = req.query;
-    const sql = 'SELECT * FROM schemes WHERE id = ?';
-    db.query(sql, [id], (err, data) => {
-        if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
-        }
-        res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { data }));
-    });
-});
-
-
-router.get('/get-schemes-carousel', VerifyUserToken, (req, res) => {
-    const carouselImages = [
-  ];
-  res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { carouselImages }));
-});
+// router.get('/getSchemeById', VerifyUserToken, (req, res) => {
+//   const { id } = req.query;
+//     const sql = 'SELECT * FROM schemes WHERE id = ?';
+//     db.query(sql, [id], (err, data) => {
+//         if (err) {
+//             console.error("Database error:", err);
+//             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+//         }
+//         res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { data }));
+//     });
+// });
 
 
-router.post('/', upload.single('Image'), (req, res) => {
-    const { schemeName, description, department_name, started_date, website_url } = req.body;
+// router.get('/get-schemes-carousel', VerifyUserToken, (req, res) => {
+//     const carouselImages = [
+//   ];
+//   res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { carouselImages }));
+// });
 
-    if (!schemeName || !description || !department_name || !started_date || !website_url || !req.file) {
+
+router.post('/', upload.single('document'), (req, res) => {
+    const { scheme_name,
+        department_name,
+        started_date,
+        introduction,
+        objective,
+        process,
+        apply_mode,
+        apply_website } = req.body;
+
+    if (!scheme_name || !department_name || !started_date || !introduction || !objective || !process || !apply_mode || !apply_website || !req.file) {
         return res.status(400).json(responseHandler("Alert", 400, "All fields are required, including Image"));
     }
 
-    const sql = 'INSERT INTO schemes (scheme_name, description, department_name, started_date,  website_url, image) VALUES (?, ?, ?, ?, ?, ?)';
-    db.query(sql, [schemeName, description, department_name, started_date, website_url, ''], (err, data) => {
+    const sql = `
+      INSERT INTO schemes 
+      (scheme_name, department_name, started_date, introduction, objective, process, apply_mode, website_url, document_url, apply_website) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    db.query(sql, [scheme_name, department_name, started_date, introduction, objective, process, apply_mode, '', apply_website], (err, data) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
@@ -89,58 +101,113 @@ router.post('/', upload.single('Image'), (req, res) => {
             }
 
             const relativeFilePath = path.join('schemesImg', String(schemeId), req.file.originalname);
-            const updateSql = 'UPDATE schemes SET image = ? WHERE id = ?';
+            const updateSql = 'UPDATE schemes SET document_url = ? WHERE id = ?';
             db.query(updateSql, [relativeFilePath, schemeId], (updateErr) => {
                 if (updateErr) {
                     console.error("Database update error:", updateErr);
                     return res.status(500).json(responseHandler("Failure", 500, "Error updating image path"));
                 }
 
-                res.status(201).json(responseHandler("Success", 201, "Scheme added successfully", { schemeId, Image: relativeFilePath }));
+                res.status(201).json(responseHandler("Success", 201, "Scheme added successfully", { schemeId, document_url: relativeFilePath }));
             });
         });
     });
 });
 
-router.delete('/:id', (req, res) => {
-    const schemeId = req.params.id;
+// router.delete('/:id', (req, res) => {
+//     const schemeId = req.params.id;
 
-    // Check if the scheme exists and retrieve the image path
-    const sqlSelect = 'SELECT Image FROM schemes WHERE id = ?';
-    db.query(sqlSelect, [schemeId], (err, result) => {
-        if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
-        }
+//     // Check if the scheme exists and retrieve the image path
+//     const sqlSelect = 'SELECT Image FROM schemes WHERE id = ?';
+//     db.query(sqlSelect, [schemeId], (err, result) => {
+//         if (err) {
+//             console.error("Database error:", err);
+//             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+//         }
 
-        if (result.length === 0) {
-            return res.status(404).json(responseHandler("Not Found", 404, "Scheme not found"));
-        }
+//         if (result.length === 0) {
+//             return res.status(404).json(responseHandler("Not Found", 404, "Scheme not found"));
+//         }
 
-        const imagePath = result[0].Image;
+//         const imagePath = result[0].Image;
 
-        // Construct the folder path
-        const schemeDir = path.join(__dirname, 'schemes', String(schemeId));
+//         // Construct the folder path
+//         const schemeDir = path.join(__dirname, 'schemes', String(schemeId));
 
-        // Delete the scheme data from the database
-        const sqlDelete = 'DELETE FROM schemes WHERE id = ?';
-        db.query(sqlDelete, [schemeId], (deleteErr) => {
-            if (deleteErr) {
-                console.error("Database error during deletion:", deleteErr);
-                return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme from database"));
-            }
+//         // Delete the scheme data from the database
+//         const sqlDelete = 'DELETE FROM schemes WHERE id = ?';
+//         db.query(sqlDelete, [schemeId], (deleteErr) => {
+//             if (deleteErr) {
+//                 console.error("Database error during deletion:", deleteErr);
+//                 return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme from database"));
+//             }
 
-            // Delete the folder containing the image
-            fs.rm(schemeDir, { recursive: true, force: true }, (fsErr) => {
-                if (fsErr) {
-                    console.error("File system error during folder deletion:", fsErr);
-                    return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme folder"));
-                }
+//             // Delete the folder containing the image
+//             fs.rm(schemeDir, { recursive: true, force: true }, (fsErr) => {
+//                 if (fsErr) {
+//                     console.error("File system error during folder deletion:", fsErr);
+//                     return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme folder"));
+//                 }
 
-                res.status(200).json(responseHandler("Success", 200, "Scheme deleted successfully"));
-            });
-        });
-    });
-});
+//                 res.status(200).json(responseHandler("Success", 200, "Scheme deleted successfully"));
+//             });
+//         });
+//     });
+// });
+
+// POST API to create a new scheme
+// app.post("/api/schemes", upload.single("document"), (req, res) => {
+//     const {
+//       scheme_name,
+//       department_name,
+//       started_date,
+//       introduction,
+//       objective,
+//       process,
+//       apply_mode,
+//       document_url,
+//       apply_website,
+//     } = req.body;
+  
+//     if (!req.file) {
+//       return res.status(400).json({ error: "Document file is required" });
+//     }
+  
+//     const fileName = req.file.filename;
+//     const website_url = `https://domainname.in/schemesImg/${fileName}`;
+  
+//     const sql = `
+//       INSERT INTO schemes 
+//       (scheme_name, department_name, started_date, introduction, objective, process, apply_mode, website_url, document_url, apply_website) 
+//       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  
+//     db.query(
+//       sql,
+//       [
+//         scheme_name,
+//         department_name,
+//         started_date,
+//         introduction,
+//         objective,
+//         process,
+//         apply_mode,
+//         website_url,
+//         document_url,
+//         apply_website,
+//       ],
+//       (err, result) => {
+//         if (err) {
+//           console.error(err);
+//           return res.status(500).json({ error: "Failed to insert data into the database" });
+//         }
+  
+//         res.status(201).json({
+//           message: "Scheme created successfully",
+//           schemeId: result.insertId,
+//           website_url,
+//         });
+//       }
+//     );
+//   });
 
 module.exports = router;
