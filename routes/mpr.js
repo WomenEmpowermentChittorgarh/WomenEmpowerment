@@ -79,16 +79,16 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
 });
 
 router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
-    const { start_month, end_month, start_year, end_year} = req.query;
+    const { month, year} = req.query;
 
-    if (!start_month || !end_month || !start_year || !end_year) {
+    if (!month || !year) {
         return res.status(400).json(responseHandler("Bad Request", 400, "Missing required query parameters"));
     }
 
-    const sql = 'SELECT * FROM monthly_progress_report WHERE StartMonth =? AND EndMonth=? AND StartYear=? AND EndYear=?';
+    const sql = 'SELECT * FROM monthly_progress_report WHERE EndMonth=? AND EndYear=?';
 
     const values = [
-        start_month, end_month, start_year, end_year
+        month, year
     ]
 
     db.query(sql, values, async (err, data) => {
