@@ -7,7 +7,7 @@ const db = require('../db');
 const responseHandler = require('../utils/responseHandler');
 const VerifyUserToken = require('../middleware/VerifyUserToken');
 
-express.use(bodyParser.json());
+// express.use(bodyParser.json());
 
 const router = express.Router();
 
