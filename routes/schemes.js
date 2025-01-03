@@ -34,12 +34,20 @@ router.get('/fetch-schemes', VerifyUserToken, (req, res) => {
             console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
-        const schemes = data.map(row => ({
-           id: row.id,
-           scheme_name: row.scheme_name,
-           started_date: row.started_date
-       }));
-        res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { schemes }));
+    //     const schemes = data.map(row => ({
+    //        id: row.id,
+    //        scheme_name: row.scheme_name,
+    //        department_name: row.department_name,
+    //        started_date: row.started_date,
+    //        introduction: row.introduction,
+    //        objective: row.objective,
+    //        process: row.process,
+    //        apply_mode: row.apply_mode,
+    //        website_url: row.website_url,
+    //        document_url: row.document_url,
+    //        apply_website: row.	apply_website
+    //    }));
+        res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", { data }));
     });
 });
 
