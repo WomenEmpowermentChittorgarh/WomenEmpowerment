@@ -117,7 +117,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     });
 });
 
-router.delete('/:id', VerifyUserToken, (req, res) => {
+router.delete('/del_scheme', VerifyUserToken, (req, res) => {
 
     const { schemeId } = req.query;
 
