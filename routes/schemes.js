@@ -63,7 +63,7 @@ const upload = multer({ storage });
 // });
 
 
-router.post('/', upload.single('document'), (req, res) => {
+router.post('/post_scheme', upload.single('document'), (req, res) => {
     const { scheme_name, department_name, started_date, introduction, objective, process, apply_mode, website_url, apply_website } = req.body;
 
     if (!scheme_name || !department_name || !started_date || !introduction || !objective || !process || !apply_mode || !apply_website || !website_url || !req.file) {
