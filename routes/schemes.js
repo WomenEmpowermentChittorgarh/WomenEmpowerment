@@ -118,10 +118,9 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 });
 
 router.delete('/del_scheme', VerifyUserToken, (req, res) => {
-
     const { schemeId } = req.query;
 
-    // Check if the scheme exists and retrieve the image path
+    // Check if the scheme exists and retrieve the document URL
     const sqlSelect = 'SELECT document_url FROM schemes WHERE id = ?';
     db.query(sqlSelect, [schemeId], (err, result) => {
         if (err) {
@@ -133,10 +132,10 @@ router.delete('/del_scheme', VerifyUserToken, (req, res) => {
             return res.status(404).json(responseHandler("Not Found", 404, "Scheme not found"));
         }
 
-        const imagePath = result[0].Image;
+        const documentUrl = result[0].document_url;
 
         // Construct the folder path
-        const schemeDir = path.join(__dirname, 'schemes', String(schemeId));
+        const schemeDir = path.join(__dirname, '../schemesImg', String(schemeId));
 
         // Delete the scheme data from the database
         const sqlDelete = 'DELETE FROM schemes WHERE id = ?';
@@ -146,7 +145,7 @@ router.delete('/del_scheme', VerifyUserToken, (req, res) => {
                 return res.status(500).json(responseHandler("Failure", 500, "Error deleting scheme from database"));
             }
 
-            // Delete the folder containing the image
+            // Delete the folder containing the document
             fs.rm(schemeDir, { recursive: true, force: true }, (fsErr) => {
                 if (fsErr) {
                     console.error("File system error during folder deletion:", fsErr);
@@ -158,6 +157,7 @@ router.delete('/del_scheme', VerifyUserToken, (req, res) => {
         });
     });
 });
+
 
 // POST API to create a new scheme
 // app.post("/api/schemes", upload.single("document"), (req, res) => {
