@@ -80,20 +80,19 @@ router.post('/save-sathin_mpr', VerifyUserToken, (req, res) => {
     }
 });
 
-// router.get('/', VerifyUserToken, (req, res) => {
-router.get('/', (req, res) => {
-    const { Month, Year, userId } = req.query;
+router.get('/download-report', VerifyUserToken, (req, res) => {
+    const { month, year} = req.query;
 
-    if (!Month || !Year || !userId) {
+    if (!month || !year) {
         return res.status(400).json(responseHandler("Bad Request", 400, "Missing required query parameters"));
     }
 
     const sql = `
         SELECT * FROM sathin_mpr
-        WHERE month=? AND year=? AND createdBy=?
+        WHERE month=? AND year=?
     `;
 
-    db.query(sql, [Month, Year, userId],async (err, results) => {
+    db.query(sql, [month, year],async (err, results) => {
         if (err) {
             console.error(err);
             return res.status(500).json(responseHandler("Failure", 500, "Database error during fetch"));
@@ -174,16 +173,18 @@ router.get('/', (req, res) => {
             worksheet.getColumn(15).width = 10;
 
             // Write to file
-            const outputPath = path.join(__dirname, "../downloads/Sathin_MPR.xlsx");
+            var fileName = "Sathin_MPR-" + month + "-" + year + ".xlsx";
+            const outputPath = path.join(__dirname, "../downloads/"+fileName);
             await workbook.xlsx.writeFile(outputPath);
 
             // Send the file as a response for download
-            res.download(outputPath, "Sathin_MPR.xlsx", (err) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json(responseHandler("Failure", 500, "Error in downloading file"));
-                }
-            });
+            return res.status(200).json(responseHandler("Success", 200, "Report Downloaded", {filePath: "downloads/"+fileName}));
+            // res.download(outputPath, "Sathin_MPR.xlsx", (err) => {
+            //     if (err) {
+            //         console.error(err);
+            //         return res.status(500).json(responseHandler("Failure", 500, "Error in downloading file"));
+            //     }
+            // });
         } catch (err) {
             console.log(err);
             

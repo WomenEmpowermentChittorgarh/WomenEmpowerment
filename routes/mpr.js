@@ -78,19 +78,17 @@ router.post('/save-progress-report', VerifyUserToken, (req, res) => {
     });
 });
 
-// router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
-router.get('/downloadMonthlyReport', async (req, res) => {
+router.get('/downloadMonthlyReport', VerifyUserToken, async (req, res) => {
+    const { month, year} = req.query;
 
-    const { start_month, end_month, start_year, end_year, userId } = req.query;
-
-    if (!start_month || !end_month || !start_year || !end_year || !userId) {
+    if (!month || !year) {
         return res.status(400).json(responseHandler("Bad Request", 400, "Missing required query parameters"));
     }
 
-    const sql = 'SELECT * FROM monthly_progress_report WHERE StartMonth =? AND EndMonth=? AND StartYear=? AND EndYear=? AND createdBy=?';
+    const sql = 'SELECT * FROM monthly_progress_report WHERE EndMonth=? AND EndYear=?';
 
     const values = [
-        start_month, end_month, start_year, end_year, userId
+        month, year
     ]
 
     db.query(sql, values, async (err, data) => {
@@ -198,16 +196,12 @@ router.get('/downloadMonthlyReport', async (req, res) => {
             worksheet.getColumn(15).width = 10;
 
             // Write to file
-            const outputPath = path.join(__dirname, "../downloads/Monthly_Progress_Report.xlsx");
+            var fileName = "Monthly_Progress_Report-" + month + "-" + year + ".xlsx";
+            const outputPath = path.join(__dirname, "../downloads/"+fileName);
             await workbook.xlsx.writeFile(outputPath);
 
             // Send the file as a response for download
-            res.download(outputPath, "Monthly_Progress_Report.xlsx", (err) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json(responseHandler("Failure", 500, "Error in downloading file"));
-                }
-            });
+            return res.status(200).json(responseHandler("Success", 200, "Report Downloaded", {filePath: "downloads/"+fileName}));
         } catch (err) {
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
