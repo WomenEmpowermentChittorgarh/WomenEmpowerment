@@ -71,6 +71,7 @@ router.post('/', upload.single('document'), (req, res) => {
         objective,
         process,
         apply_mode,
+        webstie_url,
         apply_website } = req.body;
 
     if (!scheme_name || !department_name || !started_date || !introduction || !objective || !process || !apply_mode || !apply_website || !req.file) {
