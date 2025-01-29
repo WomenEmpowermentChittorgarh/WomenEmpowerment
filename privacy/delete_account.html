@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f8f8;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .delete {
+            background-color: red;
+            color: white;
+        }
+        .cancel {
+            background-color: gray;
+            color: white;
+        }
+        input {
+            padding: 10px;
+            width: 80%;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Delete Your Account</h2>
+        <p>Are you sure you want to delete your account? This action is irreversible.</p>
+        <input type="text" id="mobileNumber" placeholder="Enter your mobile number" />
+        <button class="button delete" onclick="confirmDeletion()">Delete Account</button>
+        <button class="button cancel" onclick="window.location.href='/'">Cancel</button>
+    </div>
+    
+    <script>
+        function confirmDeletion() {
+            let mobileNumber = document.getElementById("mobileNumber").value;
+            if (mobileNumber.trim() === "") {
+                alert("Please enter your mobile number.");
+                return;
+            }
+            if (confirm("Are you sure you want to permanently delete your account?")) {
+                // Call API or redirect to backend deletion route
+                alert("Your account associated with " + mobileNumber + " has been deleted.");
+                window.location.href = window.location.href; // Redirect after deletion
+            }
+        }
+    </script>
+</body>
+</html>
