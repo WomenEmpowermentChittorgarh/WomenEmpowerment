@@ -37,44 +37,35 @@ router.get('/test', (req, res) => {
 });
 
 router.post('/post_image', VerifyUserToken, upload.single('document'), (req, res) => {
-    const { type } = req.body;
+    // const { type } = req.body;
 
-    if (!type || !req.file) {
-        return res.status(400).json(responseHandler("Alert", 400, "All fields are required, including Image"));
+    if (!req.file) {
+        return res.status(400).json(responseHandler("Alert", 400, "Image is required"));
     }
 
-    const sql = `INSERT INTO images (image, type) VALUES (?, ?)`;
+    const imageId = data.insertId;
+    const imageDir = path.join(__dirname, '../imageview', String(imageId));
+    if (!fs.existsSync(imageDir)) {
+        fs.mkdirSync(imageDir, { recursive: true });
+    }
 
-    db.query(sql, [type], (err, data) => {
-        if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+    const newFilePath = path.join(imageDir, req.file.originalname);
+    fs.rename(req.file.path, newFilePath, (renameErr) => {
+        if (renameErr) {
+            console.error("File rename error:", renameErr);
+            return res.status(500).json(responseHandler("Failure", 500, "Error moving image"));
         }
 
-        const imageId = data.insertId;
-        const imageDir = path.join(__dirname, '../imageview', String(imageId));
-        if (!fs.existsSync(imageDir)) {
-            fs.mkdirSync(imageDir, { recursive: true });
-        }
-
-        const newFilePath = path.join(imageDir, req.file.originalname);
-        fs.rename(req.file.path, newFilePath, (renameErr) => {
-            if (renameErr) {
-                console.error("File rename error:", renameErr);
-                return res.status(500).json(responseHandler("Failure", 500, "Error moving image"));
+        let relativeFilePath = path.join('imageview', String(imageId), req.file.originalname);
+        relativeFilePath = relativeFilePath.replace(/ /g, '%20'); // Replace spaces with %20
+        const insertSql = 'INSERT INTO images (image) VALUES (?)';
+        db.query(insertSql, [`https://sakhi-empowerment.in/${relativeFilePath}`], (insertErr) => {
+            if (insertErr) {
+                console.error("Database update error:", insertErr);
+                return res.status(500).json(responseHandler("Failure", 500, "Error updating image path"));
             }
 
-            let relativeFilePath = path.join('imageview', String(imageId), req.file.originalname);
-            relativeFilePath = relativeFilePath.replace(/ /g, '%20'); // Replace spaces with %20
-            const updateSql = 'UPDATE images SET image = ? WHERE id = ?';
-            db.query(updateSql, [`https://sakhi-empowerment.in/${relativeFilePath}`, imageId], (updateErr) => {
-                if (updateErr) {
-                    console.error("Database update error:", updateErr);
-                    return res.status(500).json(responseHandler("Failure", 500, "Error updating image path"));
-                }
-
-                res.status(201).json(responseHandler("Success", 201, "Scheme added successfully", { type, image: 'https://sakhi-empowerment.in/'+relativeFilePath }));
-            });
+            res.status(201).json(responseHandler("Success", 201, "Scheme added successfully", { image: 'https://sakhi-empowerment.in/' + relativeFilePath }));
         });
     });
 });
