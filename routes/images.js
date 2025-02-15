@@ -101,7 +101,7 @@ router.delete('/delete_image', VerifyUserToken, (req, res) => {
     const { id } = req.query;
     // Check if the Image exists and retrieve the document URL
     const sqlSelect = 'SELECT image FROM images WHERE id = ?';
-    db.query(sqlSelect, [schemeId], (err, result) => {
+    db.query(sqlSelect, [id], (err, result) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
