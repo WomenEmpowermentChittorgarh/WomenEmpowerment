@@ -97,4 +97,16 @@ router.post('/post_image', VerifyUserToken, upload.single('document'), (req, res
     });
 });
 
+router.delete('/delete_image', (req, res) => {
+    const { id } = req.query;
+    const sql = 'DELETE FROM `images` WHERE id = ?';
+    db.query(sql, [id], (err) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+        }
+        res.status(200).json(responseHandler("Success", 200, "Image Deleted successfully", null));
+    });
+});
+
 module.exports = router;
