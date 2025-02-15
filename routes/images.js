@@ -99,13 +99,41 @@ router.post('/post_image', VerifyUserToken, upload.single('document'), (req, res
 
 router.delete('/delete_image', VerifyUserToken, (req, res) => {
     const { id } = req.query;
-    const sql = 'DELETE FROM `images` WHERE id = ?';
-    db.query(sql, [id], (err) => {
+    // Check if the Image exists and retrieve the document URL
+    const sqlSelect = 'SELECT image FROM images WHERE id = ?';
+    db.query(sqlSelect, [schemeId], (err, result) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
         }
-        res.status(200).json(responseHandler("Success", 200, "Image Deleted successfully", null));
+
+        if (result.length === 0) {
+            return res.status(404).json(responseHandler("Not Found", 404, "Image ID not found"));
+        }
+
+        const documentUrl = result[0].document_url;
+
+        // Construct the folder path
+        const imageDir = path.join(__dirname, '../imageview', String(id));
+
+        // Delete the scheme data from the database
+        const sqlDelete = 'DELETE FROM images WHERE id = ?';
+        db.query(sqlDelete, [id], (deleteErr) => {
+            if (deleteErr) {
+                console.error("Database error during deletion:", deleteErr);
+                return res.status(500).json(responseHandler("Failure", 500, "Error deleting image from database"));
+            }
+
+            // Delete the folder containing the document
+            fs.rm(imageDir, { recursive: true, force: true }, (fsErr) => {
+                if (fsErr) {
+                    console.error("File system error during folder deletion:", fsErr);
+                    return res.status(500).json(responseHandler("Failure", 500, "Error deleting image folder"));
+                }
+
+                res.status(200).json(responseHandler("Success", 200, "Image deleted successfully"));
+            });
+        });
     });
 });
 
