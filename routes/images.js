@@ -97,7 +97,7 @@ router.post('/post_image', VerifyUserToken, upload.single('document'), (req, res
     });
 });
 
-router.delete('/delete_image', (req, res) => {
+router.delete('/delete_image', VerifyUserToken, (req, res) => {
     const { id } = req.query;
     const sql = 'DELETE FROM `images` WHERE id = ?';
     db.query(sql, [id], (err) => {
