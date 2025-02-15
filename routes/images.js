@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get('/get_image', (req, res) => {
-    const sql = 'SELECT TOP 5 * FROM images';
+    const sql = 'SELECT image FROM images ORDER BY id ASC LIMIT 5';
     db.query(sql, (err, data) => {
         if (err) {
             console.error("Database error:", err);
