@@ -25,15 +25,31 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.get('/get_image', (req, res) => {
-    const sql = 'SELECT image FROM images ORDER BY id ASC LIMIT 5';
-    db.query(sql, (err, data) => {
-        if (err) {
-            console.error("Database error:", err);
-            return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
-        }
-        res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", data));
-    });
+router.post('/get_image', (req, res) => {
+    const { type } = req.params;
+    if (type === 'banner') {
+        const sql = 'SELECT image FROM images ORDER BY id ASC LIMIT 5';
+        db.query(sql, (err, data) => {
+            if (err) {
+                console.error("Database error:", err);
+                return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+            }
+            res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", data));
+        });
+    }
+    else if (type === 'view') {
+        const sql = 'SELECT image FROM images';
+        db.query(sql, (err, data) => {
+            if (err) {
+                console.error("Database error:", err);
+                return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
+            }
+            res.status(200).json(responseHandler("Success", 200, "Schemes Fetched successfully", data));
+        });
+    }
+    else {
+        return res.status(400).json(responseHandler("Alert", 400, "Invalid type"));
+    }
 });
 
 router.post('/post_image', VerifyUserToken, upload.single('document'), (req, res) => {
@@ -75,7 +91,7 @@ router.post('/post_image', VerifyUserToken, upload.single('document'), (req, res
                     return res.status(500).json(responseHandler("Failure", 500, "Error updating image path"));
                 }
 
-                res.status(201).json(responseHandler("Success", 201, "Scheme added successfully", { image: 'https://sakhi-empowerment.in/'+relativeFilePath }));
+                res.status(201).json(responseHandler("Success", 201, "Scheme added successfully", { image: 'https://sakhi-empowerment.in/' + relativeFilePath }));
             });
         });
     });
