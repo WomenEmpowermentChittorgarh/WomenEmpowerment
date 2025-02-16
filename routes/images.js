@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post('/get_image', (req, res) => {
+router.post('/get_image', VerifyUserToken, (req, res) => {
     const { type } = req.body;
     if (type === 'banner') {
         const sql = 'SELECT image FROM images ORDER BY id ASC LIMIT 5';
