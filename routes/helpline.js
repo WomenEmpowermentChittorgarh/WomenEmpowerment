@@ -27,3 +27,5 @@ router.get('/get_helpline', VerifyUserToken, (req, res) => {
           res.status(200).json(responseHandler("Success", 200, "Helpline Numbers Fetched Successfully", { data }));
       });
   });
+
+  module.exports = router;
