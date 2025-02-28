@@ -13,7 +13,7 @@ router.post('/post_helpline', VerifyUserToken, (req, res) => {
                 console.error("Database error:", err);
                 return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
             }
-            res.status(200).json(responseHandler("Success", 200, "Helpline Number Posted Successfully", data));
+            res.status(200).json(responseHandler("Success", 200, "Helpline Number Posted Successfully"));
         });
 });
 
