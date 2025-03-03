@@ -6,9 +6,9 @@ const VerifyUserToken = require('../middleware/VerifyUserToken');
 const router = express.Router();
 
 router.post('/post_location', VerifyUserToken, (req, res) => {
-    const { name, number } = req.body;
+    const { name, address, number, latitude, longitude } = req.body;
         const sql = 'INSERT INTO location(name, address, number, latitude, longitude) VALUES (?, ?, ?, ?, ?)';
-        db.query(sql, [name, number], (err, data) => {
+        db.query(sql, [name, address, number, latitude, longitude], (err, data) => {
             if (err) {
                 console.error("Database error:", err);
                 return res.status(500).json(responseHandler("Failure", 500, "Internal Server Error"));
