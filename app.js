@@ -22,6 +22,7 @@ const otpRoutes = require('./routes/user_onboarding');
 const sathinMprRoutes = require('./routes/sathinMpr');
 const imagesRoutes = require('./routes/images');
 const helplineRoutes = require('./routes/helpline');
+const locationRoutes = require('./routes/location');
 
 // Mounting routes
 app.use('/users', userRoutes);
@@ -36,6 +37,7 @@ app.use('/downloads', express.static(path.join(__dirname,  'downloads')));
 app.use('/images', imagesRoutes);
 app.use('/imageview', express.static(path.join(__dirname, 'imageview')));
 app.use('/helpline', helplineRoutes);
+app.use('/location', locationRoutes);
 
 
 // Error handling for unmatched routes
